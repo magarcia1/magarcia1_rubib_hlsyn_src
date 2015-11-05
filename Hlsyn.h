@@ -14,24 +14,24 @@
 /**************************************************************************************************/
 
 
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef HLSYN_H
+#define HLSYN_H
 
 #include <vector>
 #include <string>
-//#include "graph.h"
+#include "graph.h"
 
-class Parser {
+class Hlsyn {
 public:
-	//Parse waypoints and streets.
+	//Parse Components and Edges.
 	//If unable to read file, the vector will be of size 0 
-	static Graph* parseFile(std::string filename);
+	static bool parseFile(Graph myGraph, std::string filename);
 
 
 private:
 	// These are private because there is no need for them in a static 
 	// class.
-	Parser();
-	~Parser();
+	Hlsyn();
+	~Hlsyn();
 };
 #endif
