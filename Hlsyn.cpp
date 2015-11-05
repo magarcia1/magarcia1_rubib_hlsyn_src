@@ -1,13 +1,13 @@
 /**************************************************************************************************/
 
 /*
-* File: parser.cpp
+* File: Hlsyn.cpp
 * Author: Miguel A. Garcia & Rubi Ballesteros
 * NetID: magarcia1
 * Assignment #: 5
 * Date: December/10/2014
 *
-* Description: Parser contains the required definitions of the parser class to successfully parse the content
+* Description: Hlsyin contains the required definitions of the Hlsyin class to successfully parse the content
 * provided as an argument at the beginning of the execution of our program. In particular, we are interested in
 * extracting the information about the Components and Dependencies existing within the file provided.
 *
@@ -28,7 +28,7 @@
 
 /***********************************************************************/
 
-#include "parser.h"
+#include "Hlsyin.h"
 #include "Component.h"
 #include "Dependencie.h"
 #include "graph.h"
@@ -38,8 +38,7 @@ using namespace std;
 
 //Parse Components and Dependencies.
 //If unable to read file, the vector will be of size 0 
-Graph* Parser::parseFile(std::string filename){
-	Graph* graph = new Graph();
+Graph* Hlsyin::parseFile(Graph myGraph, std::string filename){
 	istringstream inSS;
 	fstream input;                     //Input file stream
 	string lineString = "";

@@ -2,10 +2,10 @@
 
 /*
 * File: Components.h
-* Author: Miguel A. Garcia
+* Author: Miguel A. Garcia & Rubi Ballesteros
 * NetID: magarcia1
 * Assignment #: 5
-* Date: December/10/2014
+* Date: November/17/2015
 *
 * Description: Component.h contains the class declaration of the Component section that lists all nodes
 * in the graph. Each component has a unique integer id. 
@@ -20,7 +20,7 @@
 //------------------------------------------------------------------------------------------------
 #include <string>
 #include <vector>
-#include "Inoutput.h"
+#include "Edge.h"
 
 using namespace std;
 //------------------------------------------------------------------------------------------------
@@ -36,31 +36,35 @@ public:
 	~Component();
 	Component(int id, std::string name);
 
-	void setType(string type);
-	void setName(string name);
-	void insertInput(Inoutput* anInput);
-	void setOutput(Inoutput* anOutput);
-	void setSize(int theSize);
-
+	void setId(int newId) { this->id = newId; }
+	void setLatency(int newLatency) { this->latency = newLatency}
+	void setSize(int theSize) { this->size = theSize; }
+	void insertInput(Edge* anInput) { this->inputs.push_back(anInput); };
+	void replaceInput(int i, Edge* newPut) { this->inputs.at(i) = newPut; }
+	void setOutput(Edge* anOutput) { this->output = anOutput; };
+	void setType(string type) { this->type = type; };
+	void setName(string name) { this->name = name; }
+	void setCompSize(string newCompSize) { this->sizeoOutput = theSize; } 
+	
+	int getId(){ return this->id; }
+	int getLatency(){ return this->latency; }
+    int getSize() { return this->sizeoOutput; }
+	int getInputSize() { return this->inputs.size(); }
+	Edge* getInput(int i) { return this->inputs.at(i); }
+	Edge* getOutput() { return this->output; }
 	string getType() { return this->type; }
 	string getName() { return this->name; }
-	Inoutput* getInput(int i) { return this->inputs.at(i); }
-	Inoutput* getOutput() { return this->output; }
-	int getSize() { return this->sizeoOutput; }
-	int getInputSize() { return this->inputs.size(); }
-	//our unique identifier
-	int getId() const { return this->id; }
-	//I have to remember my Name
-	void replaceInput(int i, Inoutput* newPut) { this->inputs.at(i) = newPut; }
+	string getCompSize() { return this->compSize; } 
 
 private:
+	int id;		//our unique identifier
+	int latency;
+	int size;       //size of the component as an integer
+	vector<Edges*> inputs;
+	Edge* output;
 	string type;
 	string name;
-	vector<Inoutput*> inputs;
-	Inoutput* output;
-	int sizeoOutput;
-	int id;
-
+	string compSize; //size of the component as a string
 };
 //------------------------------------------------------------------------------------------------
 

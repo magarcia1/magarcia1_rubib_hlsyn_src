@@ -1,13 +1,13 @@
 /**************************************************************************************************/
 
 /*
-* File: parser.h
+* File: Hlsyin.h
 * Author: Miguel A. Garcia & Rubi Ballesteros
 * NetID: magarcia1
 * Assignment #: 3
 * Date: November/1172014
 *
-* Description: Parser contains the required class declaration to successfully parse the content provided
+* Description: Hlsyin contains the required class declaration to successfully parse the content provided
 * as an argument at the beginning of the execution of our program. 
 */
 

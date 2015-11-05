@@ -17,7 +17,7 @@
 #include <sstream>
 #include "Parser.h"
 #include "dpgen.h"
-#include "Dependencie.h"
+#include "Edge.h"
 #include "Graph.h"
 
 /**************************************************************************************************/

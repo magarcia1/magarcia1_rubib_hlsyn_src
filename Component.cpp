@@ -2,7 +2,7 @@
 
 /*
 * File: Components.cpp
-* Author: Miguel A. Garcia & Rubib Ballesteros
+* Author: Miguel A. Garcia & Rubi Ballesteros
 * NetID: magarcia1
 * Assignment #: 5
 * Date: December/10/2014
@@ -20,11 +20,13 @@
 #include "Component.h"
 
 
-//------------------------------------------------------------------------------------------------
+/**************************************************************************************************/
+
 
 using namespace std;
 
-//------------------------------------------------------------------------------------------------
+
+/**************************************************************************************************/
 
 Component::Component() {
 	this->type = "none";
@@ -33,7 +35,7 @@ Component::Component() {
 	this->sizeoOutput = 0;
 
 }
-Component::Component(string atype, string aname) {
+Component::Component(int id, string atype, string aname) {
 	this->type = atype;
 	this->name = aname;
 	if (this->type[this->type.length()] != '\0') {
@@ -42,7 +44,7 @@ Component::Component(string atype, string aname) {
 	if (name[name.length()] != '\0') {
 		name[name.length()] = '\0';
 	}
-
+    this->id = id;
 	this->output = NULL;
 	this->sizeoOutput = 0;
 }
@@ -61,23 +63,5 @@ Component::~Component() {
 	output = NULL;
 
 }
-void Component::setType(string type) {
-	this->type = type;
-}
 
-void Component::setName(string name) {
-	this->name = name;
-}
-
-void Component::insertInput(Inoutput* anInput) {
-	this->inputs.push_back(anInput);
-}
-
-void Component::setOutput(Inoutput* anOutput) {
-	this->output = anOutput;
-}
-
-void Component::setSize(int theSize) {
-	this->sizeoOutput = theSize;
-}
 //------------------------------------------------------------------------------------------------
