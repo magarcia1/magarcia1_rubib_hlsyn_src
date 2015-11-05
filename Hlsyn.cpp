@@ -4,7 +4,7 @@
 * File: Hlsyn.cpp
 * Author: Miguel A. Garcia & Rubi Ballesteros
 * NetID: magarcia1
-* Assignment #: 5
+* Assignment #: 3
 * Date: December/10/2014
 *
 * Description: Hlsyin contains the required definitions of the Hlsyin class to successfully parse the content
@@ -28,23 +28,28 @@
 
 /***********************************************************************/
 
-#include "Hlsyin.h"
+#include "Hlsyn.h"
 #include "Component.h"
-#include "Dependencie.h"
+#include "Edge.h"
 #include "graph.h"
+
 using namespace std;
 
 /***********************************************************************/
 
 //Parse Components and Dependencies.
 //If unable to read file, the vector will be of size 0 
-Graph* Hlsyin::parseFile(Graph myGraph, std::string filename){
+bool Hlsyn::ReadFromFile(Graph &myGraph, std::string filename){
+
+	Edge iov;
 	istringstream inSS;
 	fstream input;                     //Input file stream
 	string lineString = "";
 	string words[18];
 	int myId = 0;
+	int size;
 	int startId = 0, endId = 0;
+	bool flag = true;
 
 	input.open(filename.c_str());
 
@@ -69,7 +74,6 @@ Graph* Hlsyin::parseFile(Graph myGraph, std::string filename){
 			
 			//Detect Input, Output, or Variable Statement DONE-----------------------------------------------------
 			else if ((words[0] == "input") || (words[0] == "output") || (words[0] == "variable")) {
-				Inoutput* iow;
 				bool signedNum = true;
 
 				//Set width length for signed------------------------
@@ -104,5 +108,5 @@ Graph* Hlsyin::parseFile(Graph myGraph, std::string filename){
 		cout << "Sorry, I was not able to open the file for you." << endl;
 	}
 
-	return graph;
+	return flag;
 }

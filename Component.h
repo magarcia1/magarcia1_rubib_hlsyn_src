@@ -32,23 +32,22 @@ public:
 	//Only this way-point needs to be created
 	//Initialization 
 	Component();
-	Component(string atype, string aname);
+	Component(int id, string atype, string aname);
 	~Component();
-	Component(int id, std::string name);
 
 	void setId(int newId) { this->id = newId; }
-	void setLatency(int newLatency) { this->latency = newLatency}
+	void setLatency(int newLatency) { this->latency = newLatency;  }
 	void setSize(int theSize) { this->size = theSize; }
 	void insertInput(Edge* anInput) { this->inputs.push_back(anInput); };
 	void replaceInput(int i, Edge* newPut) { this->inputs.at(i) = newPut; }
 	void setOutput(Edge* anOutput) { this->output = anOutput; };
 	void setType(string type) { this->type = type; };
 	void setName(string name) { this->name = name; }
-	void setCompSize(string newCompSize) { this->sizeoOutput = theSize; } 
+	void setCompSize(string newCompSize) { this->compSize = newCompSize; }
 	
 	int getId(){ return this->id; }
 	int getLatency(){ return this->latency; }
-    int getSize() { return this->sizeoOutput; }
+	int getSize() { return this->size; }
 	int getInputSize() { return this->inputs.size(); }
 	Edge* getInput(int i) { return this->inputs.at(i); }
 	Edge* getOutput() { return this->output; }
@@ -60,7 +59,7 @@ private:
 	int id;		//our unique identifier
 	int latency;
 	int size;       //size of the component as an integer
-	vector<Edges*> inputs;
+	vector<Edge*> inputs;
 	Edge* output;
 	string type;
 	string name;

@@ -32,8 +32,10 @@ Component::Component() {
 	this->type = "none";
 	this->name = "default";
 	this->output = NULL;
-	this->sizeoOutput = 0;
-
+	this->size = 0;
+	this->id;
+	this->latency = 0;
+    this->compSize = ""; //size of the component as a string
 }
 Component::Component(int id, string atype, string aname) {
 	this->type = atype;
@@ -46,15 +48,12 @@ Component::Component(int id, string atype, string aname) {
 	}
     this->id = id;
 	this->output = NULL;
-	this->sizeoOutput = 0;
+	this->size = 0;
 }
 
 Component::~Component() {
 
 	unsigned int i = 0;
-	type = "";
-	name = "";
-	sizeoOutput = 0;
 	for (i = 0; i < this->inputs.size(); ++i){
 		delete inputs[i];
 	}

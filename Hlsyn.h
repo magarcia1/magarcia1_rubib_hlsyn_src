@@ -25,7 +25,7 @@ class Hlsyn {
 public:
 	//Parse Components and Edges.
 	//If unable to read file, the vector will be of size 0 
-	static bool parseFile(Graph myGraph, std::string filename);
+	static bool ReadFromFile(Graph &myGraph, std::string filename);
 
 
 private:
