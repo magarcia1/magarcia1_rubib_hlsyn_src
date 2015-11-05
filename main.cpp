@@ -1,44 +1,42 @@
-// Author: Rubi Ballesteros and Miguel Garcia
-// Date Created: November 2015
-//
-// Description: Main controlling a program that translates circuit pseudo code into
-//				a syntactically correct Verilog implementation.
-//------------------------------------------------------------------------------------------------
+/**************************************************************************************************/
+
+/*
+* File: Dependencie.h
+* Author: Miguel A. Garcia
+* NetID: magarcia1
+* Assignment #: 3
+* Date: November/10/2014
+*
+* Description: Main controlling a program that translates circuit pseudo code into
+* a syntactically correct Verilog implementation.
+*/
+
+/**************************************************************************************************/
 
 #include <iostream>
 #include <sstream>
+#include "Parser.h"
 #include "dpgen.h"
-#include "Datapath.h"
+#include "Dependencie.h"
+#include "Graph.h"
 
-//------------------------------------------------------------------------------------------------
+/**************************************************************************************************/
 
 using namespace std;
 
-//------------------------------------------------------------------------------------------------
+/**************************************************************************************************/
 
 int main(int argc, char *argv[])
 {
-	Datapath DPComponents;
+	Graph* sequenceGraph = NULL;
 	//TODO: Check for correct input. DONE !
 	if (argc != 3) {
 		cout << "\nUsage: dpgen netlistFile verilogFile \n";
 		return -1;
 	}
 	//TODO: Create a file
-	if (!ReadfromFile(DPComponents, argv[1])) {
-		cout << "Could not finish reading the file due to the errors listed above." << endl;
-		return -2;
-	}
-	
-	if (!AdjustInputs(DPComponents)) {
-		cout << "Could not finish reading the file due to the errors listed above." << endl;
-		return -3;
-	}
+	sequenceGraph = Parser::parseFile(argv[3]);
 
-	if (!WritetoFile(DPComponents, argv[2])) {
-		cout << "Could not finish writing to the file due to the errors listed above." << endl;
-		return -4;
-	}
 
 	return 0;
 }
