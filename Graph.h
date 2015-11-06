@@ -28,17 +28,20 @@ class Graph{
 public:
 	Graph();
 	
-	bool addComponent(Component* aComponent) { components.push_back(aComponent);};
-	
-	//returns NULL if the Id doesn't exist
-	Component* getComponent(int id) { return this->components.at(id); };
-	
+	void addComponent(Component* aComponent) { components.push_back(aComponent); }
+	void addEdge(Edge* aEdge) { temp.push_back(aEdge); }
+
+	Component* getComponent(int id) { return this->components.at(id); }
+	Edge* getEdge(int num){ return this->temp.at(num); }
+
 	//Check if already exists
 	//bool edgeExists(Edge* anEdge);
 	//bool componentExists(Component* aComponent);
 private:
 	//all our Components
 	vector<Component*> components;
+	//Vector containing the information of the Input and Output edges before being connected
+	vector<Edge*> temp;
 
 };
 

@@ -12,17 +12,29 @@
 */
 
 /**************************************************************************************************/
-
+#include <vector>
+#include <string>
 #include "Edge.h"
 
 /**************************************************************************************************/
 
 
-Edge::Edge(string aname, string aType, Component* adjComponent) {
-	this->adjComponents = adjComponent;
-	this->name = aname;
-	this->type = aType;
-	bool signedNum = true;
+//Edge::Edge(string aname, string aType, Component* adjComponent) {
+//	this->adjComponents = adjComponent;
+//	this->name = aname;
+//	this->type = aType;
+//	bool signedNum = true;
+//}
+Edge::Edge()
+{
+
 }
+
+Edge::Edge(string name, string sizeSpec, string type, bool signedNumber, int size)
+	:name(name), sizeSpec(sizeSpec), type(type), signedNum(signedNumber), size(size)
+{
+
+}
+
 
 /**************************************************************************************************/
