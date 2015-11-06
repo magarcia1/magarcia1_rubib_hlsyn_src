@@ -21,17 +21,17 @@
 #include <string>
 #include "graph.h"
 
-class Hlsyn {
-public:
-	//Parse Components and Edges.
-	//If unable to read file, the vector will be of size 0 
-	static bool ReadFromFile(Graph &myGraph, std::string filename);
+//class Hlsyn {
+//public:
+//	//Parse Components and Edges.
+//	//If unable to read file, the vector will be of size 0 
+	bool ReadFromFile(Graph& myGraph, std::string filename);
 
 
-private:
-	// These are private because there is no need for them in a static 
-	// class.
-	Hlsyn();
-	~Hlsyn();
-};
+//private:
+//	// These are private because there is no need for them in a static 
+//	// class.
+//	Hlsyn();
+//	~Hlsyn();
+//};
 #endif

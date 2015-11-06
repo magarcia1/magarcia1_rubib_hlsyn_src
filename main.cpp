@@ -16,8 +16,6 @@
 #include <iostream>
 #include <sstream>
 #include "Hlsyn.h"
-#include "dpgen.h"
-#include "Edge.h"
 #include "Graph.h"
 
 /**************************************************************************************************/
@@ -30,12 +28,13 @@ int main(int argc, char *argv[])
 {
 	Graph sequenceGraph;
 	//TODO: Check for correct input. DONE !
-	if (argc != 4) {
+	if (argc != 2) {
 		cout << "\nUsage: dpgen netlistFile verilogFile \n";
 		return -1;
 	}
+	
 	//TODO: Create a file	
-	if (!Hlsyn::ReadFromFile(sequenceGraph, argv[1])) {
+	if (!ReadFromFile(sequenceGraph, argv[1])) {
 		cout << "Could not finish reading the file due to the errors listed above." << endl;
 		return -2;
 	}

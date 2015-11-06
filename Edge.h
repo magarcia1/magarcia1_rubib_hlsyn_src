@@ -32,14 +32,14 @@ public:
 	Edge();
 	Edge(string aname, string aType, Component* adjComponent);
 
-	void addAdjComp(Component* aComponent) { adjComponents.push_back(aComponent); }
+	void addAdjComp(Component* aComponent) { this->adjComponents = aComponent; }
 	void setName(string aName){ this->name = aName; }
 	void setSizeSpec(string aSize) { this->sizeSpec = aSize; }
 	void setType(string aType){ this->type = aType; }
 	void setSize(int aSize){ this->size = size; }
 	void ChangeSign(bool aSign) { this->signedNum = aSign; }	
 	
-	Component* getAdjComponent(int i) const { return this->adjComponents.at(i); }
+	Component* getAdjComponent() const { return this->adjComponents; }
 	string getName() const { return this->name; }
 	string getSizeSpec() const { return this->sizeSpec; }
 	string getEndId() const { return this->type; }
@@ -49,7 +49,7 @@ public:
 
 private:
 	//to whom do I connect?
-	vector<Component*> adjComponents;
+	Component* adjComponents;
 	string name;
 	string sizeSpec;
 	string type;

@@ -31,7 +31,6 @@ using namespace std;
 Component::Component() {
 	this->type = "none";
 	this->name = "default";
-	this->output = NULL;
 	this->size = 0;
 	this->id;
 	this->latency = 0;
@@ -47,19 +46,12 @@ Component::Component(int id, string atype, string aname) {
 		name[name.length()] = '\0';
 	}
     this->id = id;
-	this->output = NULL;
 	this->size = 0;
 }
 
 Component::~Component() {
 
 	unsigned int i = 0;
-	for (i = 0; i < this->inputs.size(); ++i){
-		delete inputs[i];
-	}
-	inputs.clear();
-	delete output;
-	output = NULL;
 
 }
 
