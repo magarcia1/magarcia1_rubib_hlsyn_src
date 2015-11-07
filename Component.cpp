@@ -31,7 +31,7 @@ using namespace std;
 Component::Component() {
 	this->type = "none";
 	this->name = "default";
-	this->size = 0;
+//	this->size = 0;
 	this->id;
 	this->latency = 0;
     this->compSize = ""; //size of the component as a string
@@ -46,7 +46,7 @@ Component::Component(int id, string atype, string aname) {
 		name[name.length()] = '\0';
 	}
     this->id = id;
-	this->size = 0;
+//	this->size = 0;
 }
 
 Component::~Component() {

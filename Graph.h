@@ -34,6 +34,9 @@ public:
 	Component* getComponent(int id) { return this->components.at(id); }
 	Edge* getEdge(int num){ return this->temp.at(num); }
 
+	int getSizeofComp() { return this->components.size(); }
+	Edge* searchforEdge(string name);
+
 	//Check if already exists
 	//bool edgeExists(Edge* anEdge);
 	//bool componentExists(Component* aComponent);

@@ -25,6 +25,15 @@ Graph::Graph() {
 
 }
 
+Edge* Graph::searchforEdge(string name) {
+	for (int i = 0; i < temp.size(); i++) {
+		Edge* currEdge = temp.at(i);
+		if (currEdge->getName() == name) {
+			return currEdge;
+		}
+	}
+	return NULL;
+}
 //bool Graph::edgeExists(Edge anEdge) {
 //	for (int i = 0; i < edges.size(); i++) {
 //		Edge* edge = edges.at(i);

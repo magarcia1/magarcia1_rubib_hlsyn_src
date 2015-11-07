@@ -71,6 +71,31 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 			else if (words[0] == "//") {
 				continue;
 			}
+
+			//Handle if statement---------------------------------------------------------------------------------
+			else if(words[0]=="if"){
+				//******strip variable of parenthesis
+				if (words[1].at(0) == '(') {
+					words[1] = words[1].erase(0);
+				}
+				if (words[1].at(words[1].length()) == ')') {
+					words[1] = words[1].erase(words[1].size() - 1);
+				}
+
+				//Check condition of parenthesis
+				if (words[1]!="0"){
+					continue;
+				}
+				else {
+					bool InIf = true;
+					while (InIf) {
+						getline(input, lineString);
+						if (lineString == "}") {
+							InIf = false;
+						}
+					}
+				}
+			}
 			
 			//Detect Input, Output, or Variable Statement DONE-----------------------------------------------------
 			else if ((words[0] == "input") || (words[0] == "output") || (words[0] == "variable")) {
@@ -133,7 +158,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					size = 64;
 					signedNum = false;
 				}
-				//while loop to finish reading an definite (16) amount of inputs/outputs listed in a lines.
+				//for loop to finish reading an definite (16) amount of inputs/outputs listed in a lines.
 				bool stop = false;
 
 				for (int j = 0; !stop && (j <= 17); j++){
@@ -158,12 +183,152 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 			}	
 			//TODO: Detect components & create corresponding Scheduling Graph---------------------------------------
 			// ADD, SUB, MUL, REG, SHR, SHL, COMP
+			else if (words[1] == "=") {
 
+				int Vnumber = myGraph.getSizeofComp() + 1;
+
+				// ADDER/SUBTRACTOR *************************************************************
+				if (words[3] == "+" || words[3] == "-") {
+					Component* adder;
+					Edge* a;
+					Edge* b;
+					Edge* c;
+
+					stringstream CName;
+
+					CName << "V" << Vnumber; //guarantees unique name
+					adder = new Component(Vnumber, "adder/subtractor", CName.str());
+
+					a = myGraph.searchforEdge(words[2]);
+					b = myGraph.searchforEdge(words[4]);
+					c = myGraph.searchforEdge(words[0]);
+
+					if (a == NULL || b == NULL || c == NULL) { //if the input/outputs/wire not found
+						cout << "input/output/variable of an adder/subtractor componet does not exist" <<endl;
+						return false;
+					}
+
+					adder->insertInput(a);
+					adder->insertInput(b);
+					adder->insertInput(c);
+					adder->setLatency(1); //One cycle latency specified
+					myGraph.addComponent(adder);
+
+				}
+				// MULTIPLIER ********************************************************************
+				if (words[3] == "*") {
+					Component* mult;
+					Edge* a;
+					Edge* b;
+					Edge* c;
+
+					stringstream CName;
+
+					CName << "V" << Vnumber; //guarantees unique name
+					mult = new Component(Vnumber, "multiplier", CName.str());
+
+					a = myGraph.searchforEdge(words[2]);
+					b = myGraph.searchforEdge(words[4]);
+					c = myGraph.searchforEdge(words[0]);
+
+					if (a == NULL || b == NULL || c == NULL) { //if the input/outputs/wire not found
+						cout << "input/output/variable of a multiplier componet does not exist" << endl;
+						return false;
+					}
+
+					mult->insertInput(a);
+					mult->insertInput(b);
+					mult->insertInput(c);
+					mult->setLatency(2); //One cycle latency specified
+					myGraph.addComponent(mult);
+
+				}
+				// DIVIDER/MODULO ****************************************************************
+				if (words[3] == "/" || words[3] == "%") {
+					Component* mult;
+					Edge* a;
+					//Edge* b;
+					Edge* c;
+
+					stringstream CName;
+
+					CName << "V" << Vnumber; //guarantees unique name
+					mult = new Component(Vnumber, "divider/modulo", CName.str());
+
+					a = myGraph.searchforEdge(words[2]);
+					//b = myGraph.searchforEdge(words[4]);
+					c = myGraph.searchforEdge(words[0]);
+
+					if (a == NULL || c == NULL) { //if the input/outputs/wire not found
+						cout << "input/output/variable of a multiplier componet does not exist" << endl;
+						return false;
+					}
+
+					mult->insertInput(a);
+					//mult->insertInput(b);
+					mult->insertInput(c);
+					mult->setLatency(3); //One cycle latency specified
+					myGraph.addComponent(mult);
+
+				}
+				// LOGICAL ***********************************************************************
+				if (words[3] == ">" || words[3] == "<" || words[3] == "<<" || words[3] == ">>"
+					|| words[3] == "==" || words[3] == "?") {
+					Component* logic;
+					Edge* a;
+					Edge* b;
+					Edge* c;
+					Edge* d;
+
+					stringstream CName;
+
+					CName << "V" << Vnumber; //guarantees unique name
+					logic = new Component(Vnumber, "logic", CName.str());
+					if (words[3] == "?") {
+						a = myGraph.searchforEdge(words[2]);
+						b = myGraph.searchforEdge(words[4]);
+						c = myGraph.searchforEdge(words[6]);
+						d = myGraph.searchforEdge(words[0]);
+
+						if (a == NULL || b == NULL || c == NULL || d == NULL) { //if the input/outputs/wire not found
+							cout << "input/output/variable of a multiplier componet does not exist" << endl;
+							return false;
+						}
+
+						logic->insertInput(a);
+						logic->insertInput(b);
+						logic->insertInput(c);
+						logic->insertInput(d);
+						logic->setLatency(1); //One cycle latency specified
+						myGraph.addComponent(logic);
+					}
+					else {
+						a = myGraph.searchforEdge(words[2]);
+						b = myGraph.searchforEdge(words[4]);
+						c = myGraph.searchforEdge(words[0]);
+
+						if (a == NULL || b == NULL || c == NULL) { //if the input/outputs/wire not found
+							cout << "input/output/variable of a multiplier componet does not exist" << endl;
+							return false;
+						}
+
+						logic->insertInput(a);
+						logic->insertInput(b);
+						logic->insertInput(c);
+						logic->setLatency(1); //One cycle latency specified
+						myGraph.addComponent(logic);
+					}
+
+					
+
+				}
+			}
 
 		}
 	}
 	else {
 		cout << "Sorry, I was not able to open the file for you." << endl;
+		flag = false;
 	}
 
 	return flag;

@@ -37,9 +37,9 @@ public:
 
 	void setId(int newId) { this->id = newId; }
 	void setLatency(int newLatency) { this->latency = newLatency;  }
-	void setSize(int theSize) { this->size = theSize; }
-	void insertInput(Edge anInput) { this->IOV.push_back(anInput); };
-	void replaceInput(int i, Edge newPut) { this->IOV.at(i) = newPut; }
+	//void setSize(int theSize) { this->size = theSize; }
+	void insertInput(Edge* anInput) { this->IOV.push_back(anInput); };
+	void replaceInput(int i, Edge* newPut) { this->IOV.at(i) = newPut; }
 	//void setOutput(Edge anOutput) { this->output = anOutput; };
 	void setType(string type) { this->type = type; };
 	void setName(string name) { this->name = name; }
@@ -47,9 +47,9 @@ public:
 	
 	int getId(){ return this->id; }
 	int getLatency(){ return this->latency; }
-	int getSize() { return this->size; }
+	//int getSize() { return this->size; }
 	int getIOVize() { return this->IOV.size(); }
-	Edge getInput(int i) { return this->IOV.at(i); }
+	Edge* getInput(int i) { return this->IOV.at(i); }
 	//Edge getOutput() { return this->output; }
 	string getType() { return this->type; }
 	string getName() { return this->name; }
@@ -58,8 +58,8 @@ public:
 private:
 	int id;		//our unique identifier
 	int latency;
-	int size;       //size of the component as an integer
-	vector<Edge> IOV;
+	//int size;       //size of the component as an integer
+	vector<Edge*> IOV;
 	vector<Component*> predecessors;
 	//Edge* output;
 	string type;

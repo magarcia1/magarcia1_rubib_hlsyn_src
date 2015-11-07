@@ -27,8 +27,12 @@ using namespace std;
 int main(int argc, char *argv[])
 {
 	Graph sequenceGraph;
+	int latency;
+
+	//latency = (int)argv[2];
+
 	//TODO: Check for correct input. DONE !
-	if (argc != 2) {
+	if (argc != 4) {
 		cout << "\nUsage: dpgen netlistFile verilogFile \n";
 		return -1;
 	}
