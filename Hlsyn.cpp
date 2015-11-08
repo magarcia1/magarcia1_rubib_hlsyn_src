@@ -7,7 +7,7 @@
 * Assignment #: 3
 * Date: December/10/2014
 *
-* Description: Hlsyin contains the required definitions of the Hlsyin class to successfully parse the content
+* Description: Hlsyn contains the required definitions of the Hlsyin class to successfully parse the content
 * provided as an argument at the beginning of the execution of our program. In particular, we are interested in
 * extracting the information about the Components and Dependencies existing within the file provided.
 *
@@ -30,7 +30,7 @@
 
 #include "Hlsyn.h"
 #include "Component.h"
-#include "Edge.h"
+#include "Inoutput.h"
 //#include "graph.h"
 
 using namespace std;
@@ -41,7 +41,7 @@ using namespace std;
 //If unable to read file, the vector will be of size 0 
 bool ReadFromFile(Graph& myGraph, std::string filename){
 
-	Edge* iov;
+	Inoutput* iov;
 	istringstream inSS;
 	fstream input;                     //Input file stream
 	string lineString = "";
@@ -55,6 +55,11 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 
 	if (input.is_open()) {
 		while (!input.eof()){
+
+			for (int i = 0; i < 18; i++) {
+				words[i].clear();
+			}
+
 			getline(input, lineString);
 			istringstream inStringS(lineString);
 
@@ -176,8 +181,9 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 						}
 
 						//Create class object and insert to DP*****
-						iov = new Edge(words[j], words[1], words[0], signedNum, size);
-						myGraph.addEdge(iov);
+						iov = new Inoutput(words[j], words[1], words[0], size);
+						iov->setSign(signedNum);
+						myGraph.insertPut(iov);
 					}
 				}
 			}	
@@ -185,23 +191,23 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 			// ADD, SUB, MUL, REG, SHR, SHL, COMP
 			else if (words[1] == "=") {
 
-				int Vnumber = myGraph.getSizeofComp() + 1;
+				int Vnumber = myGraph.getCompSize() + 1;
 
 				// ADDER/SUBTRACTOR *************************************************************
 				if (words[3] == "+" || words[3] == "-") {
 					Component* adder;
-					Edge* a;
-					Edge* b;
-					Edge* c;
+					Inoutput* a;
+					Inoutput* b;
+					Inoutput* c;
 
 					stringstream CName;
 
 					CName << "V" << Vnumber; //guarantees unique name
 					adder = new Component(Vnumber, "adder/subtractor", CName.str());
 
-					a = myGraph.searchforEdge(words[2]);
-					b = myGraph.searchforEdge(words[4]);
-					c = myGraph.searchforEdge(words[0]);
+					a = myGraph.getInput(words[2]);
+					b = myGraph.getInput(words[4]);
+					c = myGraph.getOutput(words[0]);
 
 					if (a == NULL || b == NULL || c == NULL) { //if the input/outputs/wire not found
 						cout << "input/output/variable of an adder/subtractor componet does not exist" <<endl;
@@ -210,26 +216,27 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 
 					adder->insertInput(a);
 					adder->insertInput(b);
-					adder->insertInput(c);
+					adder->setOutput(c);
 					adder->setLatency(1); //One cycle latency specified
-					myGraph.addComponent(adder);
+					adder->setOperation(lineString);
+					myGraph.insertComponent(adder);
 
 				}
 				// MULTIPLIER ********************************************************************
 				if (words[3] == "*") {
 					Component* mult;
-					Edge* a;
-					Edge* b;
-					Edge* c;
+					Inoutput* a;
+					Inoutput* b;
+					Inoutput* c;
 
 					stringstream CName;
 
 					CName << "V" << Vnumber; //guarantees unique name
 					mult = new Component(Vnumber, "multiplier", CName.str());
 
-					a = myGraph.searchforEdge(words[2]);
-					b = myGraph.searchforEdge(words[4]);
-					c = myGraph.searchforEdge(words[0]);
+					a = myGraph.getInput(words[2]);
+					b = myGraph.getInput(words[4]);
+					c = myGraph.getOutput(words[0]);
 
 					if (a == NULL || b == NULL || c == NULL) { //if the input/outputs/wire not found
 						cout << "input/output/variable of a multiplier componet does not exist" << endl;
@@ -238,57 +245,59 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 
 					mult->insertInput(a);
 					mult->insertInput(b);
-					mult->insertInput(c);
+					mult->setOutput(c);
 					mult->setLatency(2); //One cycle latency specified
-					myGraph.addComponent(mult);
+					mult->setOperation(lineString);
+					myGraph.insertComponent(mult);
 
 				}
 				// DIVIDER/MODULO ****************************************************************
 				if (words[3] == "/" || words[3] == "%") {
-					Component* mult;
-					Edge* a;
-					//Edge* b;
-					Edge* c;
+					Component* div;
+					Inoutput* a;
+					Inoutput* b;
+					Inoutput* c;
 
 					stringstream CName;
 
 					CName << "V" << Vnumber; //guarantees unique name
-					mult = new Component(Vnumber, "divider/modulo", CName.str());
+					div = new Component(Vnumber, "divider/modulo", CName.str());
 
-					a = myGraph.searchforEdge(words[2]);
+					a = myGraph.getInput(words[2]);
 					//b = myGraph.searchforEdge(words[4]);
-					c = myGraph.searchforEdge(words[0]);
+					c = myGraph.getOutput(words[0]);
 
 					if (a == NULL || c == NULL) { //if the input/outputs/wire not found
 						cout << "input/output/variable of a multiplier componet does not exist" << endl;
 						return false;
 					}
 
-					mult->insertInput(a);
+					div->insertInput(a);
 					//mult->insertInput(b);
-					mult->insertInput(c);
-					mult->setLatency(3); //One cycle latency specified
-					myGraph.addComponent(mult);
+					div->setOutput(c);
+					div->setLatency(3); //One cycle latency specified
+					div->setOperation(lineString);
+					myGraph.insertComponent(div);
 
 				}
 				// LOGICAL ***********************************************************************
 				if (words[3] == ">" || words[3] == "<" || words[3] == "<<" || words[3] == ">>"
 					|| words[3] == "==" || words[3] == "?") {
 					Component* logic;
-					Edge* a;
-					Edge* b;
-					Edge* c;
-					Edge* d;
+					Inoutput* a;
+					Inoutput* b;
+					Inoutput* c;
+					Inoutput* d;
 
 					stringstream CName;
 
 					CName << "V" << Vnumber; //guarantees unique name
 					logic = new Component(Vnumber, "logic", CName.str());
 					if (words[3] == "?") {
-						a = myGraph.searchforEdge(words[2]);
-						b = myGraph.searchforEdge(words[4]);
-						c = myGraph.searchforEdge(words[6]);
-						d = myGraph.searchforEdge(words[0]);
+						a = myGraph.getInput(words[2]);
+						b = myGraph.getInput(words[4]);
+						c = myGraph.getInput(words[6]);
+						d = myGraph.getOutput(words[0]);
 
 						if (a == NULL || b == NULL || c == NULL || d == NULL) { //if the input/outputs/wire not found
 							cout << "input/output/variable of a multiplier componet does not exist" << endl;
@@ -298,14 +307,15 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 						logic->insertInput(a);
 						logic->insertInput(b);
 						logic->insertInput(c);
-						logic->insertInput(d);
+						logic->setOutput(d);
 						logic->setLatency(1); //One cycle latency specified
-						myGraph.addComponent(logic);
+						logic->setOperation(lineString);
+						myGraph.insertComponent(logic);
 					}
 					else {
-						a = myGraph.searchforEdge(words[2]);
-						b = myGraph.searchforEdge(words[4]);
-						c = myGraph.searchforEdge(words[0]);
+						a = myGraph.getInput(words[2]);
+						b = myGraph.getInput(words[4]);
+						c = myGraph.getOutput(words[0]);
 
 						if (a == NULL || b == NULL || c == NULL) { //if the input/outputs/wire not found
 							cout << "input/output/variable of a multiplier componet does not exist" << endl;
@@ -314,9 +324,10 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 
 						logic->insertInput(a);
 						logic->insertInput(b);
-						logic->insertInput(c);
+						logic->setOutput(c);
 						logic->setLatency(1); //One cycle latency specified
-						myGraph.addComponent(logic);
+						logic->setOperation(lineString);
+						myGraph.insertComponent(logic);
 					}
 
 					
@@ -332,4 +343,29 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 	}
 
 	return flag;
+}
+
+bool ConnectGraph(Graph& myGraph) {
+	//Connect input type Inoutput objects to NULL
+	//Perhaps this is not necessary.
+
+	//Set predecessor and successor
+	for (int i = 0; i < myGraph.getCompSize(); i++) {
+		Component* currComp1;
+		currComp1 = myGraph.getComponent(i);
+		for (int j = 1; j < myGraph.getCompSize(); j++) {
+			Component* currComp2;
+			currComp2 = myGraph.getComponent(j);
+			for (int k=0; k < currComp2->getInputSize(); k++) {
+				Inoutput* currInput;
+				currInput = currComp2->getInput(k);
+				if (currComp1->getOutput() == currInput) {
+					currComp1->addSuccessor(currComp2);
+					currComp2->addPredecessor(currComp1);
+				}
+			}
+		}
+	}
+
+	return true;
 }

@@ -34,7 +34,7 @@ Component::Component() {
 //	this->size = 0;
 	this->id;
 	this->latency = 0;
-    this->compSize = ""; //size of the component as a string
+//    this->compSize = ""; //size of the component as a string
 }
 Component::Component(int id, string atype, string aname) {
 	this->type = atype;

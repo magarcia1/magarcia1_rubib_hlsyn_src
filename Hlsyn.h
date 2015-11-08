@@ -25,7 +25,8 @@
 //public:
 //	//Parse Components and Edges.
 //	//If unable to read file, the vector will be of size 0 
-	bool ReadFromFile(Graph& myGraph, std::string filename);
+bool ReadFromFile(Graph& myGraph, std::string filename);
+bool ConnectGraph(Graph& myGraph);
 
 
 //private:

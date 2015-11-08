@@ -20,7 +20,7 @@
 #include <vector>
 #include <string>
 #include "Component.h"
-#include "Edge.h"
+#include "Inoutput.h"
 
 using namespace std;
 
@@ -28,23 +28,26 @@ class Graph{
 public:
 	Graph();
 	
-	void addComponent(Component* aComponent) { components.push_back(aComponent); }
-	void addEdge(Edge* aEdge) { temp.push_back(aEdge); }
+	void insertPut(Inoutput* iow);
+	void insertComponent(Component* dpcomp);
+	Inoutput* getInput(string name);
+	Inoutput* getInputat(int i);
+	Inoutput* getOutputat(int i);
+	Inoutput* getVarat(int i);
+	Inoutput* getOutput(string name);
+	Component* getComponent(int i);
+	int getCompSize();
+	int getInpSize();
+	int getOutSize();
+	int getVarSize();
 
-	Component* getComponent(int id) { return this->components.at(id); }
-	Edge* getEdge(int num){ return this->temp.at(num); }
-
-	int getSizeofComp() { return this->components.size(); }
-	Edge* searchforEdge(string name);
-
-	//Check if already exists
-	//bool edgeExists(Edge* anEdge);
-	//bool componentExists(Component* aComponent);
 private:
 	//all our Components
 	vector<Component*> components;
 	//Vector containing the information of the Input and Output edges before being connected
-	vector<Edge*> temp;
+	vector<Inoutput*> inputs;
+	vector<Inoutput*> outputs;
+	vector<Inoutput*> variables;
 
 };
 

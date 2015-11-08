@@ -3,23 +3,41 @@
 // Author: Rubi Ballesteros and Miguel Garcia
 // Date Created: September 2015
 //
-// Description: .
+// Description: Data type for inputs outputs and wires
 //
 //------------------------------------------------------------------------------------------------
 
-#ifndef DPGEN_H
-#define DPGEN_H
+#ifndef INOUTPUT_H
+#define INOUTPUT_H
 
 //------------------------------------------------------------------------------------------------
 #include <string>
-#include "Datapath.h"
 
 using namespace std;
 //------------------------------------------------------------------------------------------------
 
-bool ReadfromFile(Datapath &DP, char* FileName);
-bool AdjustInputs(Datapath &DP);
-bool WritetoFile(Datapath &DP, char* FileName);
+class Inoutput {
+private:
+	string name;
+	string sizeSpec;
+	string type;
+	int size;
+	bool signedNum;
+	
+
+public:
+	Inoutput();
+	Inoutput(string nameString,string sizeSpecString, string type, int sizeInteger);
+	~Inoutput();
+
+	void setSign(bool sign);
+	bool getSigned();
+	string getName();
+	string getSizeSpec();
+	int getSizeInt();
+	string getType();
+
+};
 
 //------------------------------------------------------------------------------------------------
 

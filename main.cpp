@@ -37,11 +37,18 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 	
-	//TODO: Create a file	
+	//TODO: Read a file	
 	if (!ReadFromFile(sequenceGraph, argv[1])) {
 		cout << "Could not finish reading the file due to the errors listed above." << endl;
 		return -2;
 	}
+
+	//TODO: Connect Graph 
+	//(technically this is a SEQUENCE graph where NULL is rep as size 0 vector of
+	//either successors or predecessors)
+	ConnectGraph(sequenceGraph);
+
+	//TODO: List_R s
 
 	return 0;
 }

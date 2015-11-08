@@ -16,6 +16,7 @@
 /**************************************************************************************************/
 
 #include "Graph.h"
+#include <iostream>
 
 using namespace std;
 
@@ -25,33 +26,89 @@ Graph::Graph() {
 
 }
 
-Edge* Graph::searchforEdge(string name) {
-	for (int i = 0; i < temp.size(); i++) {
-		Edge* currEdge = temp.at(i);
-		if (currEdge->getName() == name) {
-			return currEdge;
+void Graph::insertPut(Inoutput* iow) {
+	if (iow->getType() == "input") {
+		inputs.push_back(iow);
+	}
+	else if (iow->getType() == "output") {
+		outputs.push_back(iow);
+	}
+	else if (iow->getType() == "variable") {
+		variables.push_back(iow);
+	}
+}
+
+void Graph::insertComponent(Component* dpcomp) {
+	this->components.push_back(dpcomp);
+}
+
+Inoutput* Graph::getInput(string name) {
+	Inoutput* current;
+	for (int unsigned i = 0; i < inputs.size(); i++) {
+		current = inputs.at(i);
+		if (name == current->getName()) {
+			return current;
 		}
 	}
+
+	for (int unsigned i = 0; i < variables.size(); i++) {
+		current = variables.at(i);
+		if (name == current->getName()) {
+			return current;
+		}
+	}
+
+	cout << "The input/wire " << name << " specified does not match the inputs declared.\n Program terminated.\n";
 	return NULL;
 }
-//bool Graph::edgeExists(Edge anEdge) {
-//	for (int i = 0; i < edges.size(); i++) {
-//		Edge* edge = edges.at(i);
-//		if (edge->getName == anEdge->getName) {
-//			return true;
-//		}
-//		return false;
-//	}
-//}
-//
-//bool Graph::componentExists(Component* aComponent) {
-//	for (int i = 0; i < components.size(); i++) {
-//		Component* component = components.at(i);
-//		if (component->getName == aComponent->getName) {
-//			return true;
-//		}
-//		return false;
-//	}
-//}
+
+Inoutput* Graph::getOutput(string name) {
+	Inoutput* current;
+	for (int unsigned i = 0; i < variables.size(); i++) {
+		current = variables.at(i);
+		if (name == current->getName()) {
+			return current;
+		}
+	}
+
+	for (int unsigned i = 0; i < outputs.size(); i++) {
+		current = outputs.at(i);
+		if (name == current->getName()) {
+			return current;
+		}
+	}
+
+	cout << "The wire/output " << name << " specified does not match the inputs declared.\n Program terminated.\n";
+	return NULL;
+
+}
+
+int Graph::getCompSize() {
+	return components.size();
+}
+
+int Graph::getInpSize() {
+	return this->inputs.size();
+}
+int Graph::getOutSize() {
+	return this->outputs.size();
+}
+int Graph::getVarSize() {
+	return this->variables.size();
+}
+
+Component* Graph::getComponent(int i) {
+	return this->components.at(i);
+}
+
+Inoutput* Graph::getInputat(int i) {
+	return this->inputs.at(i);
+}
+Inoutput* Graph::getOutputat(int i) {
+	return this->outputs.at(i);
+}
+Inoutput* Graph::getVarat(int i) {
+	return this->variables.at(i);
+}
 
 /**************************************************************************************************/
