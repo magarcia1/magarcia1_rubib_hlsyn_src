@@ -387,9 +387,9 @@ bool ConnectGraph(Graph& myGraph) {
 
 
 	}
-	
-	myGraph.insertComponent(NOPhead);
 	myGraph.insertComponent(NOPtail);
+	myGraph.insertComponentAt(NOPhead, 0);
+	
 	return true;
 }
 
@@ -399,25 +399,29 @@ bool ALAPSchedule(Graph& myGraph, int alatency) {
 	Component* head = NULL;
 	Component* currComp = NULL;
 	unsigned int i = 0;
-	tail = myGraph.getComponent(myGraph.getCompSize() - 1);
-	head = myGraph.getComponent(myGraph.getCompSize() - 2);
+	tail = myGraph.getComponent(myGraph.getCompSize() - 2);
+	head = myGraph.getComponent(myGraph.getCompSize() - 1);
 	tail->setScheduled(alatency + 1);
 	
-	for (i = myGraph.getCompSize() - 1; i > 0; i--){
-		if (CheckSuccScheduled(myGraph.getComponent(i)) == true){
-			myGraph.getComponent(i)->setScheduled(tail->getScheduled() - myGraph.getComponent(i)->getLatency());
+	for (i = myGraph.getCompSize() - 2; i > 0; i--){
+		currComp = myGraph.getComponent(i);
+		if (CheckSuccScheduled(currComp) == true) {
+			if (currComp->getSuccessorSize() != 0) {
+				currComp->setScheduled(currComp->getSuccessor(0)->getScheduled() - currComp->getLatency());
+			}
 		}
 		else{
-			queue.push_back((myGraph.getComponent(i)));
+			queue.push_back(currComp);
 		}
 	}
 	for (i = 0; i < queue.size(); i++){
-		if (CheckSuccScheduled(myGraph.getComponent(i)) == true){
-			myGraph.getComponent(i)->setScheduled(tail->getScheduled() - myGraph.getComponent(i)->getLatency());
+		if (CheckSuccScheduled(queue.at(i)) == true){
+
+			queue.at(i)->setScheduled(queue.at(i)->getSuccessor(0)->getLatency() - queue.at(i)->getLatency());
 		}
-		else{
-			queue.push_back((myGraph.getComponent(i)));
-		}
+		//else{
+		//	queue.push_back(queue.at(i));
+		//}
 	}
 	if (head->getScheduled() < 0){
 		return false;
@@ -433,9 +437,9 @@ bool CheckSuccScheduled(Component* acomponent) {
 	for (i = 0; i < acomponent->getSuccessorSize(); i++) {
 		currComp = acomponent->getSuccessor(i);
 		if (currComp->getScheduled() == -1) {
-			return true;
+			return false;
 		}
 	}
 
-	return false;
+	return true;
 }

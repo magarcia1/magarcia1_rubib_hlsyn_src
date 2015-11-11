@@ -41,6 +41,8 @@ public:
 	int getOutSize();
 	int getVarSize();
 
+	void insertComponentAt(Component* comp, int i) { this->components.insert(this->components.begin()+i, comp); }
+
 private:
 	//all our Components
 	vector<Component*> components;

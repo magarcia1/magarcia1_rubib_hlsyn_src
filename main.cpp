@@ -29,7 +29,7 @@ int main(int argc, char *argv[])
 	Graph sequenceGraph;
 	int latency;
 
-	//latency = (int)argv[2];
+	latency = atoi(argv[2]);
 
 	//TODO: Check for correct input. DONE !
 	if (argc != 4) {
@@ -49,6 +49,9 @@ int main(int argc, char *argv[])
 	ConnectGraph(sequenceGraph);
 
 	//TODO: List_R s
+	if (!ALAPSchedule(sequenceGraph, latency)) {
+		cout << "ALAP scheduling could not find a suitable schedule" << endl;
+	}
 
 	return 0;
 }
