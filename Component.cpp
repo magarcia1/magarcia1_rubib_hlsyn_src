@@ -35,6 +35,7 @@ Component::Component() {
 	this->id;
 	this->latency = 0;
 //    this->compSize = ""; //size of the component as a string
+	this->scheduled = -1;
 }
 Component::Component(int id, string atype, string aname) {
 	this->type = atype;

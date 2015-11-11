@@ -346,8 +346,12 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 }
 
 bool ConnectGraph(Graph& myGraph) {
-	//Connect input type Inoutput objects to NULL
-	//Perhaps this is not necessary.
+	Component* NOPhead;
+	NOPhead = new Component(0, "head", "NOP");
+
+	Component* NOPtail;
+	NOPtail = new Component(0, "tail", "NOP");
+	
 
 	//Set predecessor and successor
 	for (int i = 0; i < myGraph.getCompSize(); i++) {
@@ -364,6 +368,51 @@ bool ConnectGraph(Graph& myGraph) {
 					currComp2->addPredecessor(currComp1);
 				}
 			}
+		}
+	}
+	//Connect input type Inoutput objects to NULL
+	for (int i = 0; i < myGraph.getCompSize(); i++) {
+		Component* currComp;
+		currComp = myGraph.getComponent(i);
+
+		if (currComp->getPredecessorSize() == 0) {
+			NOPhead->addSuccessor(currComp);
+			currComp->addPredecessor(NOPhead);
+		}
+
+		if (currComp->getSuccessorSize() == 0) {
+			NOPtail->addPredecessor(currComp);
+			currComp->addSuccessor(NOPtail);
+		}
+
+
+	}
+	
+	myGraph.insertComponent(NOPhead);
+	myGraph.insertComponent(NOPtail);
+	return true;
+}
+
+bool ALAPSchedule(Graph& myGraph, int alatency) {
+	vector<Component*> queue;
+	Component* tail;
+	Component* head;
+	Component* currComp;
+	tail = myGraph.getComponent(myGraph.getCompSize() - 1);
+	head = myGraph.getComponent(myGraph.getCompSize() - 2);
+	tail->setScheduled(alatency + 1);
+	
+
+
+
+}
+bool CheckSuccScheduled(Component* acomponent) {
+	Component* currComp;
+
+	for (int i; i < acomponent->getSuccessorSize(); i++) {
+		currComp = acomponent->getSuccessor(i);
+		if (currComp->getScheduled == -1) {
+			return false;
 		}
 	}
 

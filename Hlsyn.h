@@ -27,7 +27,8 @@
 //	//If unable to read file, the vector will be of size 0 
 bool ReadFromFile(Graph& myGraph, std::string filename);
 bool ConnectGraph(Graph& myGraph);
-
+bool ALAPSchedule(Graph& myGraph, int aLatency);
+bool CheckSuccScheduled(Component* acomponent);
 
 //private:
 //	// These are private because there is no need for them in a static 
