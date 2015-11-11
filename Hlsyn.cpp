@@ -399,15 +399,16 @@ bool ALAPSchedule(Graph& myGraph, int alatency) {
 	Component* head = NULL;
 	Component* currComp = NULL;
 	unsigned int i = 0;
-	tail = myGraph.getComponent(myGraph.getCompSize() - 2);
-	head = myGraph.getComponent(myGraph.getCompSize() - 1);
+	tail = myGraph.getComponent(myGraph.getCompSize() - 1);
+	head = myGraph.getComponent(0);
 	tail->setScheduled(alatency + 1);
 	
-	for (i = myGraph.getCompSize() - 2; i > 0; i--){
-		currComp = myGraph.getComponent(i);
+	for (i = myGraph.getCompSize() - 1; i > 0; i--){
+		currComp = myGraph.getComponent(i); 
 		if (CheckSuccScheduled(currComp) == true) {
 			if (currComp->getSuccessorSize() != 0) {
-				currComp->setScheduled(currComp->getSuccessor(0)->getScheduled() - currComp->getLatency());
+				//currComp->setScheduled(currComp->getSuccessor(0)->getScheduled() - currComp->getLatency());
+				currComp->setScheduled(lowestLatency(currComp) - currComp->getLatency());
 			}
 		}
 		else{
@@ -415,14 +416,14 @@ bool ALAPSchedule(Graph& myGraph, int alatency) {
 		}
 	}
 	for (i = 0; i < queue.size(); i++){
-		if (CheckSuccScheduled(queue.at(i)) == true){
-
-			queue.at(i)->setScheduled(queue.at(i)->getSuccessor(0)->getLatency() - queue.at(i)->getLatency());
+		currComp = queue.at(i);
+		if (CheckSuccScheduled(currComp) == true) {
+			if (currComp->getSuccessorSize() != 0) {
+				currComp->setScheduled(lowestLatency(currComp) - currComp->getLatency());
+			}
 		}
-		//else{
-		//	queue.push_back(queue.at(i));
-		//}
 	}
+	head->setScheduled(lowestLatency(head) - 1);
 	if (head->getScheduled() < 0){
 		return false;
 	}
@@ -442,4 +443,16 @@ bool CheckSuccScheduled(Component* acomponent) {
 	}
 
 	return true;
+}
+
+int lowestLatency(Component* aComp){
+	int late = aComp->getSuccessor(0)->getScheduled();
+	unsigned int i = 0;
+	for (i = 0; i < aComp->getSuccessorSize(); i++){
+		if (aComp->getSuccessor(i)->getScheduled() < late){
+			late = aComp->getSuccessor(i)->getScheduled();
+		}
+	}
+
+	return late;
 }

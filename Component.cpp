@@ -46,7 +46,10 @@ Component::Component(int id, string atype, string aname) {
 	if (name[name.length()] != '\0') {
 		name[name.length()] = '\0';
 	}
+	this->scheduled = -1;
     this->id = id;
+	this->latency = 0;
+
 //	this->size = 0;
 }
 

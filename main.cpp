@@ -32,10 +32,10 @@ int main(int argc, char *argv[])
 	latency = atoi(argv[2]);
 
 	//TODO: Check for correct input. DONE !
-	if (argc != 4) {
-		cout << "\nUsage: dpgen netlistFile verilogFile \n";
-		return -1;
-	}
+	//if (argc != 4) {
+	//	cout << "\nUsage: dpgen netlistFile verilogFile \n";
+	//	return -1;
+	//}
 	
 	//TODO: Read a file	
 	if (!ReadFromFile(sequenceGraph, argv[1])) {
