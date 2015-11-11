@@ -60,7 +60,7 @@ public:
 	void setName(string name) { this->name = name; }
 	//void setCompSize(string newCompSize) { this->compSize = newCompSize; }
 	void setOperation(string anOperation) { this->operation = anOperation; }
-	void setScheduled(int i) { this->scheduled = i };
+	void setScheduled(int i) { this->scheduled = i; };
 	
 	int getId() { return this->id; }
 	int getLatency(){ return this->latency; }

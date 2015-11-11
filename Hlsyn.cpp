@@ -255,7 +255,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 				if (words[3] == "/" || words[3] == "%") {
 					Component* div;
 					Inoutput* a;
-					Inoutput* b;
+					//Inoutput* b;
 					Inoutput* c;
 
 					stringstream CName;
@@ -395,26 +395,47 @@ bool ConnectGraph(Graph& myGraph) {
 
 bool ALAPSchedule(Graph& myGraph, int alatency) {
 	vector<Component*> queue;
-	Component* tail;
-	Component* head;
-	Component* currComp;
+	Component* tail = NULL;
+	Component* head = NULL;
+	Component* currComp = NULL;
+	unsigned int i = 0;
 	tail = myGraph.getComponent(myGraph.getCompSize() - 1);
 	head = myGraph.getComponent(myGraph.getCompSize() - 2);
 	tail->setScheduled(alatency + 1);
 	
-
-
-
+	for (i = myGraph.getCompSize() - 1; i > 0; i--){
+		if (CheckSuccScheduled(myGraph.getComponent(i)) == true){
+			myGraph.getComponent(i)->setScheduled(tail->getScheduled() - myGraph.getComponent(i)->getLatency());
+		}
+		else{
+			queue.push_back((myGraph.getComponent(i)));
+		}
+	}
+	for (i = 0; i < queue.size(); i++){
+		if (CheckSuccScheduled(myGraph.getComponent(i)) == true){
+			myGraph.getComponent(i)->setScheduled(tail->getScheduled() - myGraph.getComponent(i)->getLatency());
+		}
+		else{
+			queue.push_back((myGraph.getComponent(i)));
+		}
+	}
+	if (head->getScheduled() < 0){
+		return false;
+	}
+	else {
+		return true;
+	}
 }
+
 bool CheckSuccScheduled(Component* acomponent) {
 	Component* currComp;
-
-	for (int i; i < acomponent->getSuccessorSize(); i++) {
+	int i = 0;
+	for (i = 0; i < acomponent->getSuccessorSize(); i++) {
 		currComp = acomponent->getSuccessor(i);
-		if (currComp->getScheduled == -1) {
-			return false;
+		if (currComp->getScheduled() == -1) {
+			return true;
 		}
 	}
 
-	return true;
+	return false;
 }
