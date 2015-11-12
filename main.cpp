@@ -17,6 +17,7 @@
 #include <sstream>
 #include "Hlsyn.h"
 #include "Graph.h"
+#include "List_R.h"
 
 /**************************************************************************************************/
 
@@ -49,8 +50,9 @@ int main(int argc, char *argv[])
 	ConnectGraph(sequenceGraph);
 
 	//TODO: List_R s
-	if (!ALAPSchedule(sequenceGraph, latency)) {
+	if (!List_R(sequenceGraph, latency)) {
 		cout << "ALAP scheduling could not find a suitable schedule" << endl;
+
 	}
 
 	return 0;

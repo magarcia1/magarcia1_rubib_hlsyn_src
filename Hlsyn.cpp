@@ -218,6 +218,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					adder->insertInput(b);
 					adder->setOutput(c);
 					adder->setLatency(1); //One cycle latency specified
+					adder->setToFullSchedule(1);
 					adder->setOperation(lineString);
 					myGraph.insertComponent(adder);
 
@@ -247,6 +248,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					mult->insertInput(b);
 					mult->setOutput(c);
 					mult->setLatency(2); //One cycle latency specified
+					mult->setToFullSchedule(2);
 					mult->setOperation(lineString);
 					myGraph.insertComponent(mult);
 
@@ -276,6 +278,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					//mult->insertInput(b);
 					div->setOutput(c);
 					div->setLatency(3); //One cycle latency specified
+					div->setToFullSchedule(3);
 					div->setOperation(lineString);
 					myGraph.insertComponent(div);
 
@@ -326,6 +329,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 						logic->insertInput(b);
 						logic->setOutput(c);
 						logic->setLatency(1); //One cycle latency specified
+						logic->setToFullSchedule(1);
 						logic->setOperation(lineString);
 						myGraph.insertComponent(logic);
 					}

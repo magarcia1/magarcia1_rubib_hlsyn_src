@@ -49,6 +49,7 @@ Component::Component(int id, string atype, string aname) {
 	this->scheduled = -1;
     this->id = id;
 	this->latency = 0;
+	this->slack = -1;
 
 //	this->size = 0;
 }
