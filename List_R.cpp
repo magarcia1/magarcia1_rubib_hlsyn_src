@@ -87,20 +87,23 @@ bool List_R(Graph& aGraph, int aLatency){
 		ScheduleAvailableOp(muls, toSchedule, mul, mulTemp, timeStep);
 		ScheduleAvailableOp(logics, toSchedule, logic, logicTemp, timeStep);
 		
-		for (unsigned int i = 0; toSchedule.size(); i++){
+		for (int i = 0; i < toSchedule.size(); i++){
 			toSchedule.at(i)->decrementor();
 			if (toSchedule.at(i)->getTimeToSchedule() == 0){
 				scheduled.push_back(toSchedule.at(i));
 				toSchedule.erase(toSchedule.begin() + i);
+				i=i-1;
 			}
 		}
+
+		*timeStep = *timeStep + 1;
 	}
 
 
 	return true;
 }
 
-void ZeroSlackScheduling(vector<Component*> aComp, vector<Component*> toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep){
+void ZeroSlackScheduling(vector<Component*>& aComp, vector<Component*>& toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep){
 	*resourceAvailableTemp = *resourceAvailable;
 
 	for (unsigned int i = 0; i < aComp.size(); i++){
@@ -124,7 +127,7 @@ void ZeroSlackScheduling(vector<Component*> aComp, vector<Component*> toSchedule
 	
 }
 
-void ScheduleAvailableOp(vector<Component*> aComp, vector<Component*> toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep){
+void ScheduleAvailableOp(vector<Component*>& aComp, vector<Component*>& toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep){
 	if (*resourceAvailableTemp == 0){
 		return;
 	}

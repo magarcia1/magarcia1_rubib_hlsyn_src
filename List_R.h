@@ -19,7 +19,7 @@
 /**************************************************************************************************/
 
 bool List_R(Graph& aGraph, int aLatency);
-void ZeroSlackScheduling(vector<Component*> aComp, vector<Component*> toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep);
-void ScheduleAvailableOp(vector<Component*> aComp, vector<Component*> toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep);
+void ZeroSlackScheduling(vector<Component*>& aComp, vector<Component*>& toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep);
+void ScheduleAvailableOp(vector<Component*>& aComp, vector<Component*>& toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep);
 
 /**************************************************************************************************/
