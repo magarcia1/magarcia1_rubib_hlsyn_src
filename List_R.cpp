@@ -26,14 +26,18 @@ bool List_R(Graph& aGraph, int aLatency){
 	vector<Component*> divMods;
 	vector<Component*> muls;
 	vector<Component*> logics;
-	vector<Component*> scheduled;
-
+	vector<Component*> scheduled; //components that are already scheduled
+	vector<Component*> toSchedule;//components not yet scheduled
 	Component* currComp;
 	Component* head;
 	int* addSub = new int(1);
 	int* divMod = new int(1);
 	int* mul = new int(1);
 	int* logic = new int(1);
+	int* addSubTemp = new int(-1);
+	int* divModTemp = new int(-1);
+	int* mulTemp = new int(-1);
+	int* logicTemp = new int(-1);
 	int* timeStep = new int(1);
 
 	if (!ALAPSchedule(aGraph, aLatency)) {
@@ -44,13 +48,16 @@ bool List_R(Graph& aGraph, int aLatency){
 
 	head = aGraph.getComponent(0);
 	head->setScheduled(0);
-
+	//candidate operations are the successor elements inside the vector schedule 
+	//In here, we are pushing the head to the schedule vector (This means we already scheduled the head)
 	scheduled.push_back(aGraph.getComponent(0));
-
+	//loop into all the elements of schedule to determine if we should schedule them at the current time 
 	for (unsigned int k = 0; k < scheduled.size(); k++){
+		//check components inside the schedule vector, "one at a time" 
 		currComp = scheduled.at(k);
-		for (unsigned int i = 0; i < currComp->getSuccessorSize(); i++){
-			if (currComp->getSuccessor(i)->getType() == "adder/subtracter"){
+		//we are pushing the succesors into vecotors of the specific component, we will analyze them later
+		for (int i = 0; i < currComp->getSuccessorSize(); i++){
+			if (currComp->getSuccessor(i)->getType() == "adder/subtractor"){
 				currComp->getSuccessor(i)->setSlack(currComp->getSuccessor(i)->getScheduled() - *timeStep);
 				addSubs.push_back(currComp->getSuccessor(i));
 			}
@@ -68,37 +75,73 @@ bool List_R(Graph& aGraph, int aLatency){
 			}
 			
 		}
-		//For add and Sub
-		ZeroSlackScheduling(addSubs, addSub, timeStep);
-		//For divMod
-		ZeroSlackScheduling(divMods, divMod, timeStep);
-		//For mul
-		ZeroSlackScheduling(muls, mul, timeStep);
-		//For logic
-		ZeroSlackScheduling(logics, logic, timeStep);
-	}
 
-	return true;
-}
-
-void ZeroSlackScheduling(vector<Component*> aComp, int* resourceAvailable, int* timeStep){
-	int temp = *resourceAvailable;
-
-	for (unsigned int i = 0; i < aComp.size(); i++){
-		if (aComp.at(i)->getSlack() == 0){
-			if (temp == 0){
-				*resourceAvailable = *resourceAvailable + 1;
-				//schedule it
-				aComp.at(i)->setScheduled(*timeStep);
-			}
-			else{
-				temp = temp - 1;
-				//schedule it
-				aComp.at(i)->setScheduled(*timeStep);
+		//schedule zero zlack operations 
+		ZeroSlackScheduling(addSubs, toSchedule, addSub, addSubTemp, timeStep);
+		ZeroSlackScheduling(divMods, toSchedule, divMod, divModTemp, timeStep);
+		ZeroSlackScheduling(muls, toSchedule, mul, mulTemp, timeStep);
+		ZeroSlackScheduling(logics, toSchedule, logic, logicTemp, timeStep);
+		//schedule Candidate Operations requiring no additional resources
+		ScheduleAvailableOp(addSubs, toSchedule, addSub, addSubTemp, timeStep);
+		ScheduleAvailableOp(divMods, toSchedule, divMod, divModTemp, timeStep);
+		ScheduleAvailableOp(muls, toSchedule, mul, mulTemp, timeStep);
+		ScheduleAvailableOp(logics, toSchedule, logic, logicTemp, timeStep);
+		
+		for (unsigned int i = 0; toSchedule.size(); i++){
+			toSchedule.at(i)->decrementor();
+			if (toSchedule.at(i)->getTimeToSchedule() == 0){
+				scheduled.push_back(toSchedule.at(i));
+				toSchedule.erase(toSchedule.begin() + i);
 			}
 		}
 	}
 
+
+	return true;
 }
 
+void ZeroSlackScheduling(vector<Component*> aComp, vector<Component*> toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep){
+	*resourceAvailableTemp = *resourceAvailable;
+
+	for (unsigned int i = 0; i < aComp.size(); i++){
+		if (aComp.at(i)->getSlack() == 0){
+			if (*resourceAvailableTemp == 0){
+				*resourceAvailable = *resourceAvailable + 1;
+				//schedule it
+				aComp.at(i)->setScheduled(*timeStep);
+				toSchedule.push_back(aComp.at(i));
+				aComp.erase(aComp.begin() + i);
+			}
+			else{
+				*resourceAvailableTemp = *resourceAvailableTemp - 1;
+				//schedule it
+				aComp.at(i)->setScheduled(*timeStep);
+				toSchedule.push_back(aComp.at(i));
+				aComp.erase(aComp.begin() + i);
+			}
+		}
+	}
+	
+}
+
+void ScheduleAvailableOp(vector<Component*> aComp, vector<Component*> toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep){
+	if (*resourceAvailableTemp == 0){
+		return;
+	}
+	else{
+		for (unsigned int i = 0; i < aComp.size(); i++){
+			if (*resourceAvailableTemp != 0){
+				*resourceAvailableTemp = *resourceAvailableTemp - 1;
+				//schedule it
+				aComp.at(i)->setScheduled(*timeStep);
+				toSchedule.push_back(aComp.at(i));
+				aComp.erase(aComp.begin() + i);
+			}
+			else{
+				return;
+			}
+		}
+	}
+	return;
+}
 /**************************************************************************************************/

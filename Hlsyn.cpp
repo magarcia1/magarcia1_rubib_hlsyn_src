@@ -452,7 +452,7 @@ bool CheckSuccScheduled(Component* acomponent) {
 int lowestLatency(Component* aComp){
 	int late = aComp->getSuccessor(0)->getScheduled();
 	unsigned int i = 0;
-	for (i = 0; i < aComp->getSuccessorSize(); i++){
+	for (unsigned int i = 0; i < aComp->getSuccessorSize(); i++){
 		if (aComp->getSuccessor(i)->getScheduled() < late){
 			late = aComp->getSuccessor(i)->getScheduled();
 		}

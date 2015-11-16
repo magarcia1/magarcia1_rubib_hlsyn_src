@@ -30,6 +30,7 @@ private:
 	int id;		//our unique identifier
 	int toFullSchedule;
 	int latency;
+	int timeToSchedule;
 	//int size;       //size of the component as an integer
 	vector<Inoutput*> inputs;
 	vector<Component*> predecessors;
@@ -53,7 +54,7 @@ public:
 	~Component();
 
 	void setId(int newId) { this->id = newId; }
-	void setLatency(int newLatency) { this->latency = newLatency;  }
+	void setLatency(int newLatency) { this->latency = newLatency; this->timeToSchedule = newLatency; }
 	void setToFullSchedule(int aLatency){ this->toFullSchedule = aLatency; };
 	//void setSize(int theSize) { this->size = theSize; }
 	void insertInput(Inoutput* anInput) { this->inputs.push_back(anInput); };
@@ -79,7 +80,8 @@ public:
 	string getOperation() { return this->operation; };
 	int getScheduled() { return this->scheduled; };
 	int getSlack(){ return this->slack; };
-
+	int getTimeToSchedule(){ return this->timeToSchedule; }
+	void decrementor(){	this->timeToSchedule = this->timeToSchedule - 1; }
 	//Connecting the graph (not finished)
 	void addSuccessor(Component* aSuccessor) { this->successors.push_back(aSuccessor); };
 	void addPredecessor(Component* aPred) { this->predecessors.push_back(aPred); };
