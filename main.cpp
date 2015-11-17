@@ -55,5 +55,10 @@ int main(int argc, char *argv[])
 
 	}
 
+	if (!WritetoFile(sequenceGraph, argv[3], latency)) {
+		cout << "Could not finish output to file "<< argv[3] << endl;
+
+	}
+	
 	return 0;
 }

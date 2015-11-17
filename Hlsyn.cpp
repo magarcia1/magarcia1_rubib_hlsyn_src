@@ -460,3 +460,252 @@ int lowestLatency(Component* aComp){
 
 	return late;
 }
+
+bool WritetoFile(Graph& GP, char* FileName, int latency) {
+	int j = 0;
+	ofstream myfile(FileName);
+
+	if (myfile.is_open()) {
+
+		//Print the module declaration *****************************************
+		myfile << "`timescale 1ns / 1ps" << endl << "module hlsm(";
+
+		istringstream inputs;
+		istringstream outputs;
+		myfile << "Clk,Rst,";
+		for (int i = 0; i < GP.getInpSize(); i++) {
+			myfile << GP.getInputat(i)->getName() << ",";
+		}
+
+		for (int i = 0; i < GP.getOutSize(); i++) {
+			if (i + 1 == GP.getOutSize()) {
+				myfile << GP.getOutputat(i)->getName() << ");";
+			}
+			else {
+				myfile << GP.getOutputat(i)->getName() << ",";
+			}
+		}
+
+		//Print inputs, outputs, and wires*********************************************
+
+		//inputs------
+		int currentsizePrint;
+		int prevsizePrint = GP.getInputat(0)->getSizeInt();
+		int futuresizePrint;
+
+		// CLK and RST
+		myfile << endl << "\tinput Clk, Rst;";
+
+		bool currSign;
+		bool futureSign;
+		bool prevSign = GP.getInputat(0)->getSigned();
+		//--check if the first input is signed-------
+		if (GP.getInputat(0)->getSigned() == true) {
+			myfile << endl << "\tinput signed " << GP.getInputat(0)->getSizeSpec() << " ";
+		}
+		else {
+			myfile << endl << "\tinput " << GP.getInputat(0)->getSizeSpec() << " ";
+		}
+		//--------------------------------------------
+		for (int i = 0; i < GP.getInpSize(); i++) {
+
+			currentsizePrint = GP.getInputat(i)->getSizeInt();
+			currSign = GP.getInputat(i)->getSigned();
+
+			if (currentsizePrint == prevsizePrint && currSign == prevSign) {
+				myfile << GP.getInputat(i)->getName();
+
+				if ((i + 1) < GP.getInpSize()) {
+					futuresizePrint = GP.getInputat(i + 1)->getSizeInt();
+					futureSign = GP.getInputat(i + 1)->getSigned();
+
+					if (futuresizePrint == currentsizePrint && futureSign == currSign) {
+						myfile << ", ";
+					}
+					else {
+						myfile << ";";
+					}
+
+				}
+				else {
+					myfile << ";";
+				}
+
+			}
+			else {
+				if (currSign == true) {
+					myfile << endl << "\tinput signed" << GP.getInputat(i)->getSizeSpec() << " "
+						<< GP.getInputat(i)->getName();
+				}
+				else {
+					myfile << endl << "\tinput " << GP.getInputat(i)->getSizeSpec() << " "
+						<< GP.getInputat(i)->getName();
+				}
+
+				if ((i + 1) != GP.getInpSize()) {
+					myfile << ", ";
+				}
+				else {
+					myfile << ";";
+				}
+			}
+			prevsizePrint = currentsizePrint;
+			prevSign = currSign;
+		}
+
+
+		//OUTPUTS------
+		prevsizePrint = GP.getOutputat(0)->getSizeInt();
+		prevSign = GP.getInputat(0)->getSigned();
+		//--check if the first input is signed-------
+		if (GP.getOutputat(0)->getSigned() == true) {
+			myfile << endl << "\toutput signed reg " << GP.getOutputat(0)->getSizeSpec() << " ";
+		}
+		else {
+			myfile << endl << "\toutput reg " << GP.getOutputat(0)->getSizeSpec() << " ";
+		}
+		//--------------------------------------------
+		for (int i = 0; i < GP.getOutSize(); i++) {
+
+			currentsizePrint = GP.getOutputat(i)->getSizeInt();
+			currSign = GP.getOutputat(i)->getSigned();
+
+			if (currentsizePrint == prevsizePrint && currSign == prevSign) {
+				myfile << GP.getOutputat(i)->getName();
+
+				if ((i + 1) < GP.getOutSize()) {
+					futuresizePrint = GP.getOutputat(i + 1)->getSizeInt();
+					futureSign = GP.getOutputat(i + 1)->getSigned();
+
+					if (futuresizePrint == currentsizePrint && futureSign == currSign) {
+						myfile << ", ";
+					}
+					else {
+						myfile << ";";
+					}
+
+				}
+				else {
+					myfile << ";";
+				}
+
+			}
+			else {
+				if (currSign == true) {
+					myfile << endl << "\toutput signed reg " << GP.getOutputat(i)->getSizeSpec() << " "
+						<< GP.getOutputat(i)->getName();
+				}
+				else {
+					myfile << endl << "\toutput reg " << GP.getOutputat(i)->getSizeSpec() << " "
+						<< GP.getOutputat(i)->getName();
+				}
+
+				if ((i + 1) != GP.getOutSize()) {
+					myfile << ", ";
+				}
+				else {
+					myfile << ";";
+				}
+			}
+			prevsizePrint = currentsizePrint;
+			prevSign = currSign;
+		}
+
+		//wire------
+		prevsizePrint = GP.getVarat(0)->getSizeInt();
+		prevSign = GP.getVarat(0)->getSigned();
+		//--check if the first input is signed-------
+		if (GP.getVarat(0)->getSigned() == true) {
+			myfile << endl << "\treg signed " << GP.getVarat(0)->getSizeSpec() << " ";
+		}
+		else {
+			myfile << endl << "\treg " << GP.getVarat(0)->getSizeSpec() << " ";
+		}
+		//--------------------------------------------
+		for (int i = 0; i < GP.getVarSize(); i++) {
+
+			currentsizePrint = GP.getVarat(i)->getSizeInt();
+			currSign = GP.getVarat(i)->getSigned();
+
+			if (currentsizePrint == prevsizePrint && currSign == prevSign) {
+				myfile << GP.getVarat(i)->getName();
+
+				if ((i + 1) < GP.getVarSize()) {
+					futuresizePrint = GP.getVarat(i + 1)->getSizeInt();
+					futureSign = GP.getVarat(i + 1)->getSigned();
+
+					if (futuresizePrint == currentsizePrint && futureSign == currSign) {
+						myfile << ", ";
+					}
+					else {
+						myfile << ";";
+					}
+
+				}
+				else {
+					myfile << ";";
+				}
+
+			}
+			else {
+				if (currSign == true) {
+					myfile << endl << "\treg signed " << GP.getVarat(i)->getSizeSpec() << " "
+						<< GP.getVarat(i)->getName();
+				}
+				else {
+					myfile << endl << "\treg " << GP.getVarat(i)->getSizeSpec() << " "
+						<< GP.getVarat(i)->getName();
+				}
+
+				if ((i + 1) != GP.getVarSize()) {
+					myfile << ", ";
+				}
+				else {
+					myfile << ";";
+				}
+			}
+			prevsizePrint = currentsizePrint;
+			prevSign = currSign;
+		}
+
+
+		myfile << endl << endl << "\treg[2:0] State;" << endl;
+
+
+		//Print states-----------------------------------------------
+		myfile << "\talways @(posedge Clk) begin" << "\n\t\tif (Rst) begin" << endl;
+		myfile << "\t\t\tState <= S0" << endl;
+		for (unsigned int k = 0; k < GP.getOutSize(); k++) {
+			myfile << "\t\t\t" << GP.getOutputat(k)->getName() << "<= 0;" << endl;
+		}
+
+		myfile << "\t\tend" << endl << "\t\telse begin" << endl;
+		myfile << "\t\t\t case (State) begin" << endl;
+
+		for (unsigned int i = 0; i < latency + 1; i++) {
+			int count = 0;
+
+			for (unsigned int j = 0; j < GP.getCompSize(); j++) {
+				Component* currComp;
+				currComp = GP.getComponent(j);
+				if ((currComp->getScheduled() - 1 == i) && (currComp->getName() != "NOP")) { //if the component was scheduled at this time
+					if (count == 0) {
+						myfile << "\t\t\t\tend" << endl;
+						myfile << "\t\t\t\tS" << i << ": begin" << endl;
+					}
+					myfile << "\t\t\t\t\t" << currComp->getOperation() << endl;
+					count = count + 1;
+				}
+
+			}
+		}
+		myfile << "\t\t\t\tend" << endl;
+		myfile << "\tend" << endl;
+		//EOF
+		myfile << "endmodule\n";
+		myfile.close();
+		cout << "Output generation successful to: " << FileName << endl;
+		return true;
+	}
+	return true;
+}
