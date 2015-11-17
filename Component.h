@@ -90,6 +90,8 @@ public:
 	int getPredecessorSize() { return this->predecessors.size(); };
 
 	Component* getSuccessor(int i) { return this->successors.at(i); };
+	Component* getPredecessor(int i) { return this->predecessors.at(i); };
+
 
 
 };

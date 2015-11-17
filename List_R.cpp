@@ -28,6 +28,8 @@ bool List_R(Graph& aGraph, int aLatency){
 	vector<Component*> logics;
 	vector<Component*> scheduled; //components that are already scheduled
 	vector<Component*> toSchedule;//components not yet scheduled
+	vector<Component*> candidates;//components not yet scheduled
+
 	Component* currComp;
 	Component* head;
 	int* addSub = new int(1);
@@ -52,31 +54,36 @@ bool List_R(Graph& aGraph, int aLatency){
 	//In here, we are pushing the head to the schedule vector (This means we already scheduled the head)
 	scheduled.push_back(aGraph.getComponent(0));
 	//loop into all the elements of schedule to determine if we should schedule them at the current time 
-	for (unsigned int k = 0; k < scheduled.size(); k++){
+	for (int k = 0; k < aLatency; k++){
+	//for (unsigned int k = 0; k < aLatency; k++)
 		//check components inside the schedule vector, "one at a time" 
-		currComp = scheduled.at(k);
+		candidates = DetermineCandOp(scheduled, timeStep);
+		//currComp = scheduled.at(k);
 		//we are pushing the succesors into vecotors of the specific component, we will analyze them later
-		for (int i = 0; i < currComp->getSuccessorSize(); i++){
-			if (currComp->getSuccessor(i)->getType() == "adder/subtractor"){
+
+		for (unsigned int i = 0; i < candidates.size(); i++){
+			currComp = scheduled.at(k);
+
+			if ((currComp->getSuccessor(i)->getType() == "adder/subtractor") && checkGoodCandidate(scheduled, currComp)){
 				currComp->getSuccessor(i)->setSlack(currComp->getSuccessor(i)->getScheduled() - *timeStep);
 				addSubs.push_back(currComp->getSuccessor(i));
 			}
-			else if (currComp->getSuccessor(i)->getType() == "multiplier"){
+			else if ((currComp->getSuccessor(i)->getType() == "multiplier") && checkGoodCandidate(scheduled, currComp)){
 				currComp->getSuccessor(i)->setSlack(currComp->getSuccessor(i)->getScheduled() - *timeStep);
 				muls.push_back(currComp->getSuccessor(i));
 			}
-			else if (currComp->getSuccessor(i)->getType() == "divider/modulo"){
+			else if ((currComp->getSuccessor(i)->getType() == "divider/modulo") && checkGoodCandidate(scheduled, currComp)){
 				currComp->getSuccessor(i)->setSlack(currComp->getSuccessor(i)->getScheduled() - *timeStep);
 				divMods.push_back(currComp->getSuccessor(i));
 			}
-			else if (currComp->getSuccessor(i)->getType() == "logic"){
+			else if ((currComp->getSuccessor(i)->getType() == "logic") && checkGoodCandidate(scheduled, currComp)){
 				currComp->getSuccessor(i)->setSlack(currComp->getSuccessor(i)->getScheduled() - *timeStep);
 				logics.push_back(currComp->getSuccessor(i));
 			}
 			
 		}
 
-		//schedule zero zlack operations 
+		//schedule zero slack operations 
 		ZeroSlackScheduling(addSubs, toSchedule, addSub, addSubTemp, timeStep);
 		ZeroSlackScheduling(divMods, toSchedule, divMod, divModTemp, timeStep);
 		ZeroSlackScheduling(muls, toSchedule, mul, mulTemp, timeStep);
@@ -87,7 +94,7 @@ bool List_R(Graph& aGraph, int aLatency){
 		ScheduleAvailableOp(muls, toSchedule, mul, mulTemp, timeStep);
 		ScheduleAvailableOp(logics, toSchedule, logic, logicTemp, timeStep);
 		
-		for (int i = 0; i < toSchedule.size(); i++){
+		for (unsigned int i = 0; i < toSchedule.size(); i++){
 			toSchedule.at(i)->decrementor();
 			if (toSchedule.at(i)->getTimeToSchedule() == 0){
 				scheduled.push_back(toSchedule.at(i));
@@ -146,5 +153,36 @@ void ScheduleAvailableOp(vector<Component*>& aComp, vector<Component*>& toSchedu
 		}
 	}
 	return;
+}
+
+vector<Component*> DetermineCandOp(vector<Component*> scheduled, int* timeStep){
+	vector<Component*> timeCandidates;
+	
+	for (unsigned int i = 0; i < scheduled.size(); i++){
+		if (*timeStep == scheduled.at(i)->getScheduled()){
+			timeCandidates.push_back(scheduled.at(i));
+		}
+	}
+	for (unsigned int i = 0; i < timeCandidates.size(); i++){
+		
+	}
+	return timeCandidates;
+}
+
+bool checkGoodCandidate(vector<Component*> scheduled, Component* currComp){
+	int temp = 0;
+	for (unsigned int i = 0; scheduled.size(); i++){
+		for (int j = 0; j < currComp->getPredecessorSize(); j++){
+			if (currComp->getPredecessor(j) == scheduled.at(i)){
+				temp = temp + 1;
+			}
+		}
+	}
+	if (temp == currComp->getPredecessorSize()){
+		return true;
+	}
+	else{
+		return false;
+	}
 }
 /**************************************************************************************************/

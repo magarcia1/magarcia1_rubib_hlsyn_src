@@ -19,7 +19,9 @@
 /**************************************************************************************************/
 
 bool List_R(Graph& aGraph, int aLatency);
+bool checkGoodCandidate(vector<Component*> scheduled, Component* currComp);
 void ZeroSlackScheduling(vector<Component*>& aComp, vector<Component*>& toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep);
 void ScheduleAvailableOp(vector<Component*>& aComp, vector<Component*>& toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep);
+vector<Component*> DetermineCandOp(vector<Component*> scheduled, int* timeStep);
 
 /**************************************************************************************************/
