@@ -50,6 +50,7 @@ bool List_R(Graph& aGraph, int aLatency){
 
 	head = aGraph.getComponent(0);
 	head->setScheduled(0);
+	head->setScheduledCompleted(0);
 	//candidate operations are the successor elements inside the vector schedule 
 	//In here, we are pushing the head to the schedule vector (This means we already scheduled the head)
 	scheduled.push_back(aGraph.getComponent(0));
@@ -57,10 +58,10 @@ bool List_R(Graph& aGraph, int aLatency){
 	for (int k = 0; k < aLatency; k++){
 	
 		candidates = DetermineCandOp(scheduled, timeStep);
-		*addSubTemp = *addSub;
+		/**addSubTemp = *addSub;
 		*divModTemp = *divMod;
 		*mulTemp = *mul;
-		*logicTemp = *logic;
+		*logicTemp = *logic;*/
 		for (unsigned int i = 0; i < candidates.size(); i++){
 			currComp = candidates.at(i);
 			
@@ -80,26 +81,35 @@ bool List_R(Graph& aGraph, int aLatency){
 					currComp->setSlack(currComp->getScheduled() - *timeStep);
 					logics.push_back(currComp);
 				}
-
-
-				//schedule zero slack operations 
-				ZeroSlackScheduling(addSubs, toSchedule, addSub, addSubTemp, timeStep);
-				ZeroSlackScheduling(divMods, toSchedule, divMod, divModTemp, timeStep);
-				ZeroSlackScheduling(muls, toSchedule, mul, mulTemp, timeStep);
-				ZeroSlackScheduling(logics, toSchedule, logic, logicTemp, timeStep);
-				//schedule Candidate Operations requiring no additional resources
-				ScheduleAvailableOp(addSubs, toSchedule, addSub, addSubTemp, timeStep);
-				ScheduleAvailableOp(divMods, toSchedule, divMod, divModTemp, timeStep);
-				ScheduleAvailableOp(muls, toSchedule, mul, mulTemp, timeStep);
-				ScheduleAvailableOp(logics, toSchedule, logic, logicTemp, timeStep);
-			
+				////schedule zero slack operations 
+				//ZeroSlackScheduling(addSubs, toSchedule, addSub, addSubTemp, timeStep);
+				//ZeroSlackScheduling(divMods, toSchedule, divMod, divModTemp, timeStep);
+				//ZeroSlackScheduling(muls, toSchedule, mul, mulTemp, timeStep);
+				//ZeroSlackScheduling(logics, toSchedule, logic, logicTemp, timeStep);
+				////schedule Candidate Operations requiring no additional resources
+				//ScheduleAvailableOp(addSubs, toSchedule, addSub, addSubTemp, timeStep);
+				//ScheduleAvailableOp(divMods, toSchedule, divMod, divModTemp, timeStep);
+				//ScheduleAvailableOp(muls, toSchedule, mul, mulTemp, timeStep);
+				//ScheduleAvailableOp(logics, toSchedule, logic, logicTemp, timeStep);
 		}
+		//schedule zero slack operations 
+		ZeroSlackScheduling(addSubs, toSchedule, addSub, addSubTemp, timeStep);
+		ZeroSlackScheduling(divMods, toSchedule, divMod, divModTemp, timeStep);
+		ZeroSlackScheduling(muls, toSchedule, mul, mulTemp, timeStep);
+		ZeroSlackScheduling(logics, toSchedule, logic, logicTemp, timeStep);
+		//schedule Candidate Operations requiring no additional resources
+		ScheduleAvailableOp(addSubs, toSchedule, addSub, addSubTemp, timeStep);
+		ScheduleAvailableOp(divMods, toSchedule, divMod, divModTemp, timeStep);
+		ScheduleAvailableOp(muls, toSchedule, mul, mulTemp, timeStep);
+		ScheduleAvailableOp(logics, toSchedule, logic, logicTemp, timeStep);
 
 		for (unsigned int i = 0; i < toSchedule.size(); i++){
 			toSchedule.at(i)->decrementor();
 			if (toSchedule.at(i)->getTimeToSchedule() == 0){
+				toSchedule.at(i)->setScheduledCompleted(*timeStep);
 				scheduled.push_back(toSchedule.at(i));
-				if (toSchedule.at(i)->getType() == "adder/subtractor"){
+
+				/*if (toSchedule.at(i)->getType() == "adder/subtractor"){
 					*addSubTemp = *addSubTemp + 1;
 				}
 				else if (toSchedule.at(i)->getType() == "multiplier"){
@@ -110,7 +120,7 @@ bool List_R(Graph& aGraph, int aLatency){
 				}
 				else if (toSchedule.at(i)->getType() == "logic"){
 					*logicTemp = *logicTemp + 1;
-				}
+				}*/
 				toSchedule.erase(toSchedule.begin() + i);
 				i = i - 1;
 			}
@@ -125,7 +135,7 @@ bool List_R(Graph& aGraph, int aLatency){
 }
 
 void ZeroSlackScheduling(vector<Component*>& aComp, vector<Component*>& toSchedule, int* resourceAvailable, int* resourceAvailableTemp, int* timeStep){
-	//*resourceAvailableTemp = *resourceAvailable;
+	*resourceAvailableTemp = *resourceAvailable;
 
 	for (unsigned int i = 0; i < aComp.size(); i++){
 		if (aComp.at(i)->getSlack() == 0){
@@ -174,7 +184,7 @@ vector<Component*> DetermineCandOp(vector<Component*> scheduled, int* timeStep){
 	vector<Component*> TrueCandidates;
 
 	for (unsigned int i = 0; i < scheduled.size(); i++){
-		if (*timeStep-1 == scheduled.at(i)->getScheduled()){
+		if (*timeStep-1 == scheduled.at(i)->getScheduledCompleted()){
 			timeCandidates.push_back(scheduled.at(i));
 		}
 	}
@@ -184,7 +194,7 @@ vector<Component*> DetermineCandOp(vector<Component*> scheduled, int* timeStep){
 			TrueCandidates.push_back(timeCandidates.at(j)->getSuccessor(k));
 		}
 	}
-		return TrueCandidates;
+	return TrueCandidates;
 }
 
 bool checkGoodCandidate(vector<Component*> scheduled, Component* currComp){
