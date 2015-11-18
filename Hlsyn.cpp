@@ -55,7 +55,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 
 	if (input.is_open()) {
 		while (!input.eof()){
-
+			
 			for (int i = 0; i < 18; i++) {
 				words[i].clear();
 			}
@@ -463,6 +463,8 @@ int lowestLatency(Component* aComp){
 
 bool WritetoFile(Graph& GP, char* FileName, int latency) {
 	int j = 0;
+	string operationparts[7];
+
 	ofstream myfile(FileName);
 
 	if (myfile.is_open()) {
@@ -472,7 +474,7 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 
 		istringstream inputs;
 		istringstream outputs;
-		myfile << "Clk,Rst,";
+		myfile << "Clk,Rst,Start,";
 		for (int i = 0; i < GP.getInpSize(); i++) {
 			myfile << GP.getInputat(i)->getName() << ",";
 		}
@@ -494,7 +496,7 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 		int futuresizePrint;
 
 		// CLK and RST
-		myfile << endl << "\tinput Clk, Rst;";
+		myfile << endl << "\tinput Clk, Rst, Start;";
 
 		bool currSign;
 		bool futureSign;
@@ -673,34 +675,92 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 
 
 		//Print states-----------------------------------------------
+
+		//---if RST
 		myfile << "\talways @(posedge Clk) begin" << "\n\t\tif (Rst) begin" << endl;
-		myfile << "\t\t\tState <= S0" << endl;
+		myfile << "\t\t\tState<=Wait" << endl;
 		for (unsigned int k = 0; k < GP.getOutSize(); k++) {
-			myfile << "\t\t\t" << GP.getOutputat(k)->getName() << "<= 0;" << endl;
+			myfile << "\t\t\t" << GP.getOutputat(k)->getName() << "<=0;" << endl;
+		}
+		for (unsigned int k = 0; k < GP.getVarSize(); k++) {
+			myfile << "\t\t\t" << GP.getVarat(k)->getName() << "<=0;" << endl;
 		}
 
+		//---wait state
 		myfile << "\t\tend" << endl << "\t\telse begin" << endl;
 		myfile << "\t\t\t case (State) begin" << endl;
+		myfile << "\t\t\t\tWait: begin" << endl;
+		myfile << "\t\t\t\t\t" << "if (Start == 1)begin" << endl
+			<< "\t\t\t\t\t\tState<=S1;" << endl;
+		myfile << "\t\t\t\t\tend" << endl;
+		myfile << "\t\t\t\t\t" << "else begin" << endl
+			<< "\t\t\t\t\t\tState<=Wait;" << endl;
+		myfile << "\t\t\t\t\tend" << endl;
 
-		for (unsigned int i = 0; i < latency + 1; i++) {
+	//---rest of states
+
+		//FIGURE OUT WHAT THE LAST COMPONENT SCHEDULED IS-----------------------------------------------
+		int lastSchedTime = 0;
+		for (unsigned int j = 0; j < GP.getCompSize(); j++) {
+			if ((GP.getComponent(j)->getScheduled() > lastSchedTime)) {
+				if (GP.getComponent(j)->getName() != "NOP") {
+					lastSchedTime = GP.getComponent(j)->getScheduled();
+				}
+			}
+
+		}
+
+		//----------------------------------------------------------------------------------------------
+		for (unsigned int i = 1; i < latency + 1; i++) {
 			int count = 0;
 
 			for (unsigned int j = 0; j < GP.getCompSize(); j++) {
+
+				//clear prev parsing operation
+				for (int i = 0; i < 7; i++) {
+					operationparts[i].clear();
+				}
 				Component* currComp;
 				currComp = GP.getComponent(j);
-				if ((currComp->getScheduled() - 1 == i) && (currComp->getName() != "NOP")) { //if the component was scheduled at this time
+				//if the component was scheduled
+				if ((currComp->getScheduled()  == i) && (currComp->getName() != "NOP")) { //if the component was scheduled at this time
 					if (count == 0) {
 						myfile << "\t\t\t\tend" << endl;
 						myfile << "\t\t\t\tS" << i << ": begin" << endl;
 					}
-					myfile << "\t\t\t\t\t" << currComp->getOperation() << endl;
+
+
+				//print the operation "a<=b+c" (add <= instead of just =
+					istringstream operationParse(currComp->getOperation());
+
+					//parse line
+					operationParse >> operationparts[0] >> operationparts[1] >> operationparts[2]
+						>> operationparts[3] >> operationparts[4] >> operationparts[5] >> operationparts[6];
+
+					myfile << "\t\t\t\t\t" << operationparts[0] <<"<"<< operationparts[1] << operationparts[2]
+						<< operationparts[3] << operationparts[4] << operationparts[5] << operationparts[6] 
+						<< ";" << endl;
+
 					count = count + 1;
 				}
+				
+				if (i < lastSchedTime && j == GP.getCompSize()-1) {
+					myfile << "\t\t\t\t\tState<=S" << i + 1 << ";" << endl;
 
+				}
 			}
 		}
+
+		//--final state
+		myfile << "\t\t\t\t\tState<=Final;" << endl;
 		myfile << "\t\t\t\tend" << endl;
+		myfile << "\t\t\t\tFinal: begin" << endl;
+		myfile << "\t\t\t\t\t" << "Done<=1;" << endl;
+		myfile << "\t\t\t\t\t" << "State<=Wait;" << endl;
+		myfile << "\t\t\t\tend" << endl;
+		myfile << "\t\t\tend" << endl;
 		myfile << "\tend" << endl;
+
 		//EOF
 		myfile << "endmodule\n";
 		myfile.close();
