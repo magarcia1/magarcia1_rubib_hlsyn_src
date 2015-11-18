@@ -758,7 +758,8 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 		myfile << "\t\t\t\t\t" << "Done<=1;" << endl;
 		myfile << "\t\t\t\t\t" << "State<=Wait;" << endl;
 		myfile << "\t\t\t\tend" << endl;
-		myfile << "\t\t\tend" << endl;
+		myfile << "\t\t\tendcase" << endl;
+		myfile << "\t\tend" << endl;
 		myfile << "\tend" << endl;
 
 		//EOF
