@@ -41,7 +41,7 @@ int main(int argc, char *argv[])
 	//TODO: Read a file	
 	if (!ReadFromFile(sequenceGraph, argv[1])) {
 		cout << "Could not finish reading the file due to the errors listed above." << endl;
-		return -2;
+		return -1;
 	}
 
 	//TODO: Connect Graph 
@@ -52,12 +52,12 @@ int main(int argc, char *argv[])
 	//TODO: List_R s
 	if (!List_R(sequenceGraph, latency)) {
 		cout << "ALAP scheduling could not find a suitable schedule" << endl;
-
+		return -2;
 	}
 
 	if (!WritetoFile(sequenceGraph, argv[3], latency)) {
 		cout << "Could not finish output to file "<< argv[3] << endl;
-
+		return -3;
 	}
 	
 	return 0;

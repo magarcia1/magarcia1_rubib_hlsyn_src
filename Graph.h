@@ -30,6 +30,7 @@ public:
 	
 	void insertPut(Inoutput* iow);
 	void insertComponent(Component* dpcomp);
+	void insertIF(Component* aComponet);
 	Inoutput* getInput(string name);
 	Inoutput* getInputat(int i);
 	Inoutput* getOutputat(int i);
@@ -46,6 +47,7 @@ public:
 private:
 	//all our Components
 	vector<Component*> components;
+	vector<Component*> IfStatements;
 	//Vector containing the information of the Input and Output edges before being connected
 	vector<Inoutput*> inputs;
 	vector<Inoutput*> outputs;

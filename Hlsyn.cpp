@@ -51,6 +51,10 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 	int startId = 0, endId = 0;
 	bool flag = true;
 
+	bool InIFflag = false;
+
+	Inoutput* currIFcondition;
+
 	input.open(filename.c_str());
 
 	if (input.is_open()) {
@@ -78,29 +82,30 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 			}
 
 			//Handle if statement---------------------------------------------------------------------------------
-			else if(words[0]=="if"){
-				//******strip variable of parenthesis
-				if (words[1].at(0) == '(') {
-					words[1] = words[1].erase(0);
-				}
-				if (words[1].at(words[1].length()) == ')') {
-					words[1] = words[1].erase(words[1].size() - 1);
-				}
+			else if(words[0]=="if"|| words[0] == "}"){
+				//starting the if statement
+				if (words[0] == "if") {
+					//SAVE the if condition as an INOUTPUT currIFcondition
+					currIFcondition = myGraph.getInput(words[3]);
+					if (currIFcondition == NULL) {
+						currIFcondition = myGraph.getOutput(words[3]);
+					}
 
-				//Check condition of parenthesis
-				if (words[1]!="0"){
+					if (currIFcondition == NULL) {
+						cout << "Incorrect IF usage" << endl;
+						return false;
+					}
+
+					//Check condition of parenthesis
+					InIFflag = true;
 					continue;
 				}
-				else {
-					bool InIf = true;
-					while (InIf) {
-						getline(input, lineString);
-						if (lineString == "}") {
-							InIf = false;
-						}
-					}
+				//The closing bracket
+				else if (words[0] == "}") {
+					InIFflag = false;
+					continue;
 				}
-			}
+}
 			
 			//Detect Input, Output, or Variable Statement DONE-----------------------------------------------------
 			else if ((words[0] == "input") || (words[0] == "output") || (words[0] == "variable")) {
@@ -220,7 +225,13 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					adder->setLatency(1); //One cycle latency specified
 					adder->setToFullSchedule(1);
 					adder->setOperation(lineString);
-					myGraph.insertComponent(adder);
+
+					if (InIFflag == true) {
+						myGraph.insertIF(adder);
+					}
+					else {
+						myGraph.insertComponent(adder);
+					}
 
 				}
 				// MULTIPLIER ********************************************************************

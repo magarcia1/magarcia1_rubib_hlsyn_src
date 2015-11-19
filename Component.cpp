@@ -32,7 +32,7 @@ Component::Component() {
 	this->type = "none";
 	this->name = "default";
 //	this->size = 0;
-	this->id;
+	this->id = 0;
 	this->latency = 0;
 //    this->compSize = ""; //size of the component as a string
 	this->scheduled = -1;
@@ -56,7 +56,6 @@ Component::Component(int id, string atype, string aname) {
 
 Component::~Component() {
 
-	unsigned int i = 0;
 
 }
 

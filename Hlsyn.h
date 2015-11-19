@@ -19,7 +19,7 @@
 
 #include <vector>
 #include <string>
-#include "graph.h"
+#include "Graph.h"
 
 //class Hlsyn {
 //public:

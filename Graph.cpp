@@ -42,6 +42,10 @@ void Graph::insertComponent(Component* dpcomp) {
 	this->components.push_back(dpcomp);
 }
 
+void Graph::insertIF(Component* aComponent) {
+	this->IfStatements.push_back(aComponent);
+}
+
 Inoutput* Graph::getInput(string name) {
 	Inoutput* current;
 	for (int unsigned i = 0; i < inputs.size(); i++) {
@@ -90,9 +94,11 @@ int Graph::getCompSize() {
 int Graph::getInpSize() {
 	return this->inputs.size();
 }
+
 int Graph::getOutSize() {
 	return this->outputs.size();
 }
+
 int Graph::getVarSize() {
 	return this->variables.size();
 }
@@ -104,9 +110,11 @@ Component* Graph::getComponent(int i) {
 Inoutput* Graph::getInputat(int i) {
 	return this->inputs.at(i);
 }
+
 Inoutput* Graph::getOutputat(int i) {
 	return this->outputs.at(i);
 }
+
 Inoutput* Graph::getVarat(int i) {
 	return this->variables.at(i);
 }
