@@ -36,6 +36,7 @@ Component::Component() {
 	this->latency = 0;
 //    this->compSize = ""; //size of the component as a string
 	this->scheduled = -1;
+	bool ifPred = false;
 }
 Component::Component(int id, string atype, string aname) {
 	this->type = atype;
@@ -50,6 +51,7 @@ Component::Component(int id, string atype, string aname) {
     this->id = id;
 	this->latency = 0;
 	this->slack = -1;
+	bool ifPred = false;
 
 //	this->size = 0;
 }

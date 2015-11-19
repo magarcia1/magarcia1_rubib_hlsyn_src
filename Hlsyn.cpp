@@ -511,14 +511,22 @@ void setIFlatency(Graph& myGraph) {
 			
 			if (currComp2->getOutput() == currComp1->getIfCond()) {
 
+				currComp1->addPredecessor(currComp2);
+
+				currComp2->setIfPred();
+				currComp2->addSuccessor(currComp1);
+
 				if (currComp2->getType() == "multiplier") {
 					currComp1->setScheduled(currComp2->getScheduled() + 2);//adjust for latency
+					currComp2->setUntilIf(2);
 				}
 				else if (currComp2->getType() == "divider/modulo") {
 					currComp1->setScheduled(currComp2->getScheduled() + 3);
+					currComp2->setUntilIf(3);
 				}
 				else {
 					currComp1->setScheduled(currComp2->getScheduled() + 1);
+					currComp2->setUntilIf(1);
 				}
 			} //set the current Inouptut IF to the components
 		}
@@ -530,6 +538,8 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 	string operationparts[7];
 
 	ofstream myfile(FileName);
+
+	
 
 	if (myfile.is_open()) {
 
@@ -565,6 +575,7 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 		bool currSign;
 		bool futureSign;
 		bool prevSign = GP.getInputat(0)->getSigned();
+
 		//--check if the first input is signed-------
 		if (GP.getInputat(0)->getSigned() == true) {
 			myfile << endl << "\tinput signed " << GP.getInputat(0)->getSizeSpec() << " ";
@@ -775,7 +786,13 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 		}
 
 		//----------------------------------------------------------------------------------------------
+		
 		for (int i = 1; i < latency + 1; i++) {
+			bool pred = false;
+			bool goon = false;
+			string condname = "";
+			int SIF = 0;
+			int schedTime=0;
 			int count = 0;
 
 			for (int j = 0; j < GP.getCompSize(); j++) {
@@ -807,9 +824,38 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 
 					count = count + 1;
 				}
-				
-				if (i < lastSchedTime && j == GP.getCompSize()-1) {
-					myfile << "\t\t\t\t\tState<=S" << i + 1 << ";" << endl;
+				if (currComp->getIfPred() == true) {
+					if (currComp->getUntilIf() == 0) {
+						pred = true;
+						condname = currComp->getOutput()->getName();
+						SIF = currComp->getSuccessor(currComp->getSuccessorSize() - 1)->getScheduled();
+						schedTime = i + 1;
+						currComp->setIfPred();
+					}
+					else {
+						currComp->setUntilIf(currComp->getUntilIf() - 1);
+					}
+				}
+
+				if (i+1 < lastSchedTime && j == GP.getCompSize()-1 && j!=0) {
+					if (pred==true) {
+
+						myfile << "\t\t\t\t\tif(" << condname
+							<< "==1)begin" << endl;
+						myfile << "\t\t\t\t\t\tState<=SIF"
+							<< SIF
+							<< ";" << endl;
+						myfile << "\t\t\t\t\tend" << endl << "\t\t\t\t\telse begin" << endl << "\t\t\t\t\t\tState<="
+							<< "S" <<schedTime << ";" << endl
+							<< "\t\t\t\t\tend" << endl;
+
+						
+						pred = false;
+
+					}
+					else {
+						myfile << "\t\t\t\t\tState<=S" << i + 1 << ";" << endl;
+					}
 
 				}
 			}
@@ -817,6 +863,55 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 
 		//--final state
 		myfile << "\t\t\t\t\tState<=Final;" << endl;
+
+		//---IF statement states---------------------------------------------------------------------
+		for (int i = 1; i < latency + 1; i++) {
+			int count = 0;
+			bool inLast = false;
+			for (int j = 0; j < GP.getIfSize(); j++) {
+
+				//clear prev parsing operation
+				for (int i = 0; i < 7; i++) {
+					operationparts[i].clear();
+				}
+				Component* currComp;
+				currComp = GP.getIFComponent(j);
+				//if the component was scheduled
+				if ((currComp->getScheduled() == i) && (currComp->getName() != "NOP")) { //if the component was scheduled at this time
+					if (count == 0) {
+						myfile << "\t\t\t\tend" << endl;
+						myfile << "\t\t\t\tSIF" << i << ": begin" << endl;
+					}
+
+
+					//print the operation "a<=b+c" (add <= instead of just =
+					istringstream operationParse(currComp->getOperation());
+
+					//parse line
+					operationParse >> operationparts[0] >> operationparts[1] >> operationparts[2]
+						>> operationparts[3] >> operationparts[4] >> operationparts[5] >> operationparts[6];
+
+					myfile << "\t\t\t\t\t" << operationparts[0] << "<" << operationparts[1] << operationparts[2]
+						<< operationparts[3] << operationparts[4] << operationparts[5] << operationparts[6]
+						<< ";" << endl;
+
+					count = count + 1;
+
+					if (i + 1 < lastSchedTime && j == GP.getIfSize() - 1 && !inLast) {
+						myfile << "\t\t\t\t\tState<=S" << i + 1 << ";" << endl;
+						inLast = true;
+				}
+
+
+
+				}
+			}
+		}
+
+
+
+		//------------------------------------------------------------------------
+	
 		myfile << "\t\t\t\tend" << endl;
 		myfile << "\t\t\t\tFinal: begin" << endl;
 		myfile << "\t\t\t\t\t" << "Done<=1;" << endl;
