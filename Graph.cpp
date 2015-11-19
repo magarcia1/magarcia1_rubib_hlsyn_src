@@ -103,6 +103,10 @@ int Graph::getVarSize() {
 	return this->variables.size();
 }
 
+int Graph::getIfSize() {
+	return this->IfStatements.size();
+}
+
 Component* Graph::getComponent(int i) {
 	return this->components.at(i);
 }
@@ -117,6 +121,10 @@ Inoutput* Graph::getOutputat(int i) {
 
 Inoutput* Graph::getVarat(int i) {
 	return this->variables.at(i);
+}
+
+Component* Graph::getIFComponent(int i){
+	return this->IfStatements.at(i);
 }
 
 /**************************************************************************************************/

@@ -37,10 +37,12 @@ public:
 	Inoutput* getVarat(int i);
 	Inoutput* getOutput(string name);
 	Component* getComponent(int i);
+	Component* getIFComponent(int i);
 	int getCompSize();
 	int getInpSize();
 	int getOutSize();
 	int getVarSize();
+	int getIfSize();
 
 	void insertComponentAt(Component* comp, int i) { this->components.insert(this->components.begin()+i, comp); }
 

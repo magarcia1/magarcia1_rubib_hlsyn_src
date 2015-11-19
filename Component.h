@@ -45,6 +45,7 @@ private:
 	int scheduledCompleted; //The time in where the component was fully scheduled
 	int slack;
 
+	Inoutput* ifCond;
 
 
 public:
@@ -69,7 +70,9 @@ public:
 	void setOperation(string anOperation) { this->operation = anOperation; };
 	void setScheduled(int i) { this->scheduled = i; };
 	void setSlack(int slack){ this->slack = slack; };
-	void setScheduledCompleted(int i){ this->scheduledCompleted = i; }
+	void setScheduledCompleted(int i) { this->scheduledCompleted = i; };
+
+	void setIfCond(Inoutput* acond) { this->ifCond = acond; };
 	
 	int getId() { return this->id; };
 	int getLatency(){ return this->latency; };
@@ -80,7 +83,9 @@ public:
 	Inoutput* getOutput() { return this->output; }
 	string getType() { return this->type; };
 	string getName() { return this->name; };
-	int getScheduledCompleted(){ return this->scheduledCompleted; }
+	int getScheduledCompleted() { return this->scheduledCompleted; };
+
+	Inoutput* getIfCond() { return this->ifCond; };
 
 	//string getCompSize() { return this->compSize; } 
 	string getOperation() { return this->operation; };

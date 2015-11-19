@@ -30,13 +30,14 @@ int main(int argc, char *argv[])
 	Graph sequenceGraph;
 	int latency;
 
-	latency = atoi(argv[2]);
+	stringstream(argv[2]) >> latency;
+
 
 	//TODO: Check for correct input. DONE !
-	//if (argc != 4) {
-	//	cout << "\nUsage: dpgen netlistFile verilogFile \n";
-	//	return -1;
-	//}
+	if (argc != 4) {
+		cout << "\nUsage: hlsyn cFile latecy verilogFile \n";
+		return -1;
+	}
 	
 	//TODO: Read a file	
 	if (!ReadFromFile(sequenceGraph, argv[1])) {
@@ -53,6 +54,10 @@ int main(int argc, char *argv[])
 	if (!List_R(sequenceGraph, latency)) {
 		cout << "ALAP scheduling could not find a suitable schedule" << endl;
 		return -2;
+	}
+
+	if (sequenceGraph.getIfSize() != 0) {
+		setIFlatency(sequenceGraph);
 	}
 
 	if (!WritetoFile(sequenceGraph, argv[3], latency)) {

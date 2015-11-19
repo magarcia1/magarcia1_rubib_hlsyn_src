@@ -86,9 +86,9 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 				//starting the if statement
 				if (words[0] == "if") {
 					//SAVE the if condition as an INOUTPUT currIFcondition
-					currIFcondition = myGraph.getInput(words[3]);
+					currIFcondition = myGraph.getInput(words[2]);
 					if (currIFcondition == NULL) {
-						currIFcondition = myGraph.getOutput(words[3]);
+						currIFcondition = myGraph.getOutput(words[2]);
 					}
 
 					if (currIFcondition == NULL) {
@@ -215,7 +215,7 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					c = myGraph.getOutput(words[0]);
 
 					if (a == NULL || b == NULL || c == NULL) { //if the input/outputs/wire not found
-						cout << "input/output/variable of an adder/subtractor componet does not exist" <<endl;
+						cout << "input/output/variable of an adder/subtractor componet does not exist" << endl;
 						return false;
 					}
 
@@ -224,10 +224,13 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					adder->setOutput(c);
 					adder->setLatency(1); //One cycle latency specified
 					adder->setToFullSchedule(1);
-					adder->setOperation(lineString);
+					
+					adder->setOperation(lineString); 
+
 
 					if (InIFflag == true) {
-						myGraph.insertIF(adder);
+						adder->setIfCond(currIFcondition);
+						myGraph.insertIF(adder); //it has an extra \t in there
 					}
 					else {
 						myGraph.insertComponent(adder);
@@ -261,7 +264,14 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					mult->setLatency(2); //One cycle latency specified
 					mult->setToFullSchedule(2);
 					mult->setOperation(lineString);
-					myGraph.insertComponent(mult);
+
+					if (InIFflag == true) {
+						mult->setIfCond(currIFcondition);
+						myGraph.insertIF(mult); //it has an extra \t in there
+					}
+					else {
+						myGraph.insertComponent(mult);
+					}
 
 				}
 				// DIVIDER/MODULO ****************************************************************
@@ -291,7 +301,13 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 					div->setLatency(3); //One cycle latency specified
 					div->setToFullSchedule(3);
 					div->setOperation(lineString);
-					myGraph.insertComponent(div);
+					if (InIFflag == true) {
+						div->setIfCond(currIFcondition);
+						myGraph.insertIF(div); //it has an extra \t in there
+					}
+					else {
+						myGraph.insertComponent(div);
+					}
 
 				}
 				// LOGICAL ***********************************************************************
@@ -324,7 +340,13 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 						logic->setOutput(d);
 						logic->setLatency(1); //One cycle latency specified
 						logic->setOperation(lineString);
-						myGraph.insertComponent(logic);
+
+						if (InIFflag == true) {
+							myGraph.insertIF(logic); //it has an extra \t in there
+						}
+						else {
+							myGraph.insertComponent(logic);
+						}
 					}
 					else {
 						a = myGraph.getInput(words[2]);
@@ -342,7 +364,14 @@ bool ReadFromFile(Graph& myGraph, std::string filename){
 						logic->setLatency(1); //One cycle latency specified
 						logic->setToFullSchedule(1);
 						logic->setOperation(lineString);
-						myGraph.insertComponent(logic);
+
+						if (InIFflag == true) {
+							logic->setIfCond(currIFcondition);
+							myGraph.insertIF(logic); //it has an extra \t in there
+						}
+						else {
+							myGraph.insertComponent(logic);
+						}
 					}
 
 					
@@ -422,7 +451,6 @@ bool ALAPSchedule(Graph& myGraph, int alatency) {
 		currComp = myGraph.getComponent(i); 
 		if (CheckSuccScheduled(currComp) == true) {
 			if (currComp->getSuccessorSize() != 0) {
-				//currComp->setScheduled(currComp->getSuccessor(0)->getScheduled() - currComp->getLatency());
 				currComp->setScheduled(lowestLatency(currComp) - currComp->getLatency());
 			}
 		}
@@ -463,13 +491,38 @@ bool CheckSuccScheduled(Component* acomponent) {
 int lowestLatency(Component* aComp){
 	int late = aComp->getSuccessor(0)->getScheduled();
 	unsigned int i = 0;
-	for (unsigned int i = 0; i < aComp->getSuccessorSize(); i++){
+	for (int i = 0; i < aComp->getSuccessorSize(); i++){
 		if (aComp->getSuccessor(i)->getScheduled() < late){
 			late = aComp->getSuccessor(i)->getScheduled();
 		}
 	}
 
 	return late;
+}
+
+void setIFlatency(Graph& myGraph) {
+	//Set predecessor and successor
+	for (int i = 0; i < myGraph.getIfSize(); i++) {
+		Component* currComp1;
+		currComp1 = myGraph.getIFComponent(i);
+		for (int j = 1; j < myGraph.getCompSize(); j++) {
+			Component* currComp2;
+			currComp2 = myGraph.getComponent(j);
+			
+			if (currComp2->getOutput() == currComp1->getIfCond()) {
+
+				if (currComp2->getType() == "multiplier") {
+					currComp1->setScheduled(currComp2->getScheduled() + 2);//adjust for latency
+				}
+				else if (currComp2->getType() == "divider/modulo") {
+					currComp1->setScheduled(currComp2->getScheduled() + 3);
+				}
+				else {
+					currComp1->setScheduled(currComp2->getScheduled() + 1);
+				}
+			} //set the current Inouptut IF to the components
+		}
+	}
 }
 
 bool WritetoFile(Graph& GP, char* FileName, int latency) {
@@ -690,10 +743,10 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 		//---if RST
 		myfile << "\talways @(posedge Clk) begin" << "\n\t\tif (Rst) begin" << endl;
 		myfile << "\t\t\tState<=Wait" << endl;
-		for (unsigned int k = 0; k < GP.getOutSize(); k++) {
+		for ( int k = 0; k < GP.getOutSize(); k++) {
 			myfile << "\t\t\t" << GP.getOutputat(k)->getName() << "<=0;" << endl;
 		}
-		for (unsigned int k = 0; k < GP.getVarSize(); k++) {
+		for (int k = 0; k < GP.getVarSize(); k++) {
 			myfile << "\t\t\t" << GP.getVarat(k)->getName() << "<=0;" << endl;
 		}
 
@@ -712,7 +765,7 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 
 		//FIGURE OUT WHAT THE LAST COMPONENT SCHEDULED IS-----------------------------------------------
 		int lastSchedTime = 0;
-		for (unsigned int j = 0; j < GP.getCompSize(); j++) {
+		for (int j = 0; j < GP.getCompSize(); j++) {
 			if ((GP.getComponent(j)->getScheduled() > lastSchedTime)) {
 				if (GP.getComponent(j)->getName() != "NOP") {
 					lastSchedTime = GP.getComponent(j)->getScheduled();
@@ -722,10 +775,10 @@ bool WritetoFile(Graph& GP, char* FileName, int latency) {
 		}
 
 		//----------------------------------------------------------------------------------------------
-		for (unsigned int i = 1; i < latency + 1; i++) {
+		for (int i = 1; i < latency + 1; i++) {
 			int count = 0;
 
-			for (unsigned int j = 0; j < GP.getCompSize(); j++) {
+			for (int j = 0; j < GP.getCompSize(); j++) {
 
 				//clear prev parsing operation
 				for (int i = 0; i < 7; i++) {

@@ -30,6 +30,7 @@ bool ConnectGraph(Graph& myGraph);
 bool ALAPSchedule(Graph& myGraph, int aLatency);
 bool CheckSuccScheduled(Component* acomponent);
 int lowestLatency(Component* aComp); //Lowest Latency of the successors of a component
+void setIFlatency(Graph& myGraph);
 bool WritetoFile(Graph& GP, char* FileName, int latency);
 //private:
 //	// These are private because there is no need for them in a static 
